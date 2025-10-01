@@ -4,10 +4,10 @@ import ccxt
 import psycopg2
 from datetime import datetime
 
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_NAME = os.getenv("DB_NAME", "trading")
-DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASS = os.getenv("DB_PASS", "postgres")
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASS = os.getenv("DB_PASS")
 
 # Создаём клиент биржи (Binance через ccxt)
 exchange = ccxt.binance()
