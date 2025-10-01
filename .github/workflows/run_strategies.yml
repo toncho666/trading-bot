@@ -1,4 +1,3 @@
-name: Run Trading Strategies
 on:
   schedule:
     - cron: "*/5 * * * *"    # каждые 5 минут
@@ -9,9 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      
       - uses: actions/setup-python@v4
-        with: {python-version: "3.10"}
-      - run: pip install -r requirements.txt
+        with: 
+          python-version: "3.10"
+          
+      - name: Install dependencies
+        run: pip install -r requirements.txt
       
       - name: Run strategies with DB connection
         env:
@@ -19,4 +22,4 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASS: ${{ secrets.DB_PASS }}
-      - run: python runner.py   # ваш файл, который прогоняет все стратегии
+        run: python runner.py   # ваш файл, который прогоняет все стратегии
