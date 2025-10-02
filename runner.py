@@ -4,16 +4,16 @@ import ccxt
 import psycopg2
 from datetime import datetime
 
-DB_HOST = os.getenv("DB_HOST")
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-DB_PASS = os.getenv("DB_PASS")
+DB_HOST = os.environ("DB_HOST")
+DB_NAME = os.environ("DB_NAME")
+DB_USER = os.environ("DB_USER")
+DB_PASS = os.environ("DB_PASS")
 
 print("Environment variables:")
-print(f"DB_HOST: {os.getenv('DB_HOST')}")
-print(f"DB_NAME: {os.getenv('DB_NAME')}")
-print(f"DB_USER: {os.getenv('DB_USER')}")
-print(f"DB_PASS: {os.getenv('DB_PASS')}")
+print(f"DB_HOST: {os.environ('DB_HOST')}")
+print(f"DB_NAME: {os.environ('DB_NAME')}")
+print(f"DB_USER: {os.environ('DB_USER')}")
+print(f"DB_PASS: {os.environ('DB_PASS')}")
 
 
 
