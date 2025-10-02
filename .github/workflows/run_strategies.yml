@@ -6,7 +6,6 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    
     services:
       postgres:
         image: postgres:13
@@ -20,20 +19,13 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-          
     steps:
       - uses: actions/checkout@v3
-
-
-
-      
       - uses: actions/setup-python@v4
         with: 
           python-version: "3.10"
-          
       - name: Install dependencies
         run: pip install -r requirements.txt
-      
       - name: Run strategies with DB connection
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
