@@ -32,9 +32,4 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run strategies with DB connection
-        env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
         run: python runner.py   # ваш файл, который прогоняет все стратегии
