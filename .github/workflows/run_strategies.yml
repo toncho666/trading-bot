@@ -32,5 +32,10 @@ jobs:
           python-version: "3.10"
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: Debug ENV
+        run: |
+          echo "DB_HOST=$DB_HOST"
+          echo "DB_NAME=$DB_NAME"
+          echo "DB_USER=$DB_USER"
       - name: Run strategies with DB connection
         run: python runner.py   # ваш файл, который прогоняет все стратегии
