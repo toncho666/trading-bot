@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: "* 1 * * *"    # каждые 5 минут
+    - cron: "0 * * * *"    # каждые 5 минут
   workflow_dispatch:
 
 jobs:
