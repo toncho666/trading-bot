@@ -39,7 +39,7 @@ def run_strategy(file):
     spec.loader.exec_module(strategy)
     
     if hasattr(strategy, "trading_strategy"):
-        signal = strategy.run(exchange)
+        signal = strategy.trading_strategy(exchange)
         if signal:
             cur.execute(
                 """
