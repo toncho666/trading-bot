@@ -17,8 +17,8 @@ print(f"DB_PASS: {os.getenv('DB_PASS')}")
 
 
 
-# Создаём клиент биржи (Binance через ccxt)
-exchange = ccxt.binance()
+# Создаём клиент биржи (Bybit через ccxt)
+exchange = ccxt.bybit()
 
 # Подключение к Postgres
 conn = psycopg2.connect(
