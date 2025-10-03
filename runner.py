@@ -34,18 +34,13 @@ def fetch_data(symbol="BTC/USDT", timeframe="1h", limit=100):
     """Получение исторических данных OHLCV с Binance"""
     ohlcv = exchange.fetch_ohlcv(symbol, timeframe=timeframe, limit=limit)
     # Преобразуем в список словарей
-    data = [
-        {
-            "timestamp": datetime.utcfromtimestamp(candle[0] / 1000),
-            "open": candle[1],
-            "high": candle[2],
-            "low": candle[3],
-            "close": candle[4],
-            "volume": candle[5],
-        }
-        for candle in ohlcv
-    ]
-    return data
+    df = pd.DataFrame(
+        ohlcv,
+        columns=["timestamp", "open", "high", "low", "close", "volume"]
+    )
+    df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
+    df.set_index("timestamp", inplace=True)
+    return df
 
 
 # Папка со стратегиями
@@ -56,15 +51,10 @@ def run_strategy(file):
     strategy = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(strategy)
 
+    # Загружаем данные
+    data = fetch_data("BTC/USDT", "1h")
     
-    
-    if hasattr(strategy, "trading_strategy"):
-        
-        # Загружаем данные
-        symbol = "BTC/USDT"
-        timeframe = "1h"
-        data = fetch_data(symbol, timeframe)
-        
+    if hasattr(strategy, "trading_strategy"):    
         # Передаем данные в стратегию
         signal = strategy.trading_strategy(data)
         
