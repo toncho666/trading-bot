@@ -63,6 +63,7 @@ def run_strategy(file):
 
         # Проверяем наличие сигнала
         if "signal" in signal_df.columns and last_row["signal"] != 0:
+            print('Сигнал присутствует')
             signal_dict = {
                 "symbol": symbol,
                 "timeframe": timeframe,
@@ -90,6 +91,8 @@ def run_strategy(file):
             )
             conn.commit()
             print(f"[INFO] Сигнал добавлен: {signal_dict}")
+        else:
+            print('Сигнал отсутствует')
 
 # Запуск всех стратегий
 for f in os.listdir(strategies_folder):
