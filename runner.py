@@ -38,7 +38,7 @@ def run_strategy(file):
     strategy = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(strategy)
     
-    if hasattr(strategy, "run"):
+    if hasattr(strategy, "trading_strategy"):
         signal = strategy.run(exchange)
         if signal:
             cur.execute(
