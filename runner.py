@@ -54,12 +54,24 @@ def run_strategy(file):
 
     # Загружаем данные
     data = fetch_data("BTC/USDT", "1h")
-    
-    if hasattr(strategy, "trading_strategy"):    
-        # Передаем данные в стратегию
-        signal = strategy.trading_strategy(data)
-        
-        if signal:
+
+    # Стратегия возвращает DataFrame
+    signal_df = strategy.trading_strategy(data)
+
+    if signal_df is not None and not signal_df.empty:
+        last_row = signal_df.iloc[-1]   # берём последнюю строку
+
+        # Проверяем наличие сигнала
+        if "signal" in signal_df.columns and last_row["signal"] != 0:
+            signal_dict = {
+                "symbol": symbol,
+                "timeframe": timeframe,
+                "side": "buy" if last_row["signal"] == 1 else "sell",
+                "volume": 10,
+                "open_price": float(data["open"].iloc[-1]),
+                "close_price": float(data["close"].iloc[-1]),
+            }
+
             cur.execute(
                 """
                 INSERT INTO test.signals (strategy_name, symbol, timeframe, side, volume, open_price, close_price, created_at)
@@ -67,17 +79,17 @@ def run_strategy(file):
                 """,
                 (
                     os.path.basename(file),
-                    signal.get("symbol", symbol),
-                    signal.get("timeframe", timeframe),
-                    signal["side"],
-                    signal["volume"],
-                    signal["open_price"],
-                    signal["close_price"],
+                    signal_dict["symbol"],
+                    signal_dict["timeframe"],
+                    signal_dict["side"],
+                    signal_dict["volume"],
+                    signal_dict["open_price"],
+                    signal_dict["close_price"],
                     datetime.utcnow()
                 )
             )
             conn.commit()
-            print(f"[INFO] Сигнал добавлен: {signal}")
+            print(f"[INFO] Сигнал добавлен: {signal_dict}")
 
 # Запуск всех стратегий
 for f in os.listdir(strategies_folder):
