@@ -30,6 +30,24 @@ conn = psycopg2.connect(
 )
 cur = conn.cursor()
 
+def fetch_data(symbol="BTC/USDT", timeframe="1h", limit=100):
+    """Получение исторических данных OHLCV с Binance"""
+    ohlcv = exchange.fetch_ohlcv(symbol, timeframe=timeframe, limit=limit)
+    # Преобразуем в список словарей
+    data = [
+        {
+            "timestamp": datetime.utcfromtimestamp(candle[0] / 1000),
+            "open": candle[1],
+            "high": candle[2],
+            "low": candle[3],
+            "close": candle[4],
+            "volume": candle[5],
+        }
+        for candle in ohlcv
+    ]
+    return data
+
+
 # Папка со стратегиями
 strategies_folder = "strategies"
 
@@ -37,9 +55,19 @@ def run_strategy(file):
     spec = importlib.util.spec_from_file_location("strategy", file)
     strategy = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(strategy)
+
+    
     
     if hasattr(strategy, "trading_strategy"):
-        signal = strategy.trading_strategy(exchange)
+        
+        # Загружаем данные
+        symbol = "BTC/USDT"
+        timeframe = "1h"
+        data = fetch_data(symbol, timeframe)
+        
+        # Передаем данные в стратегию
+        signal = strategy.trading_strategy(data)
+        
         if signal:
             cur.execute(
                 """
@@ -48,8 +76,8 @@ def run_strategy(file):
                 """,
                 (
                     os.path.basename(file),
-                    signal.get("symbol", "BTC/USDT"),
-                    signal.get("timeframe", "1h"),
+                    signal.get("symbol", symbol),
+                    signal.get("timeframe", timeframe),
                     signal["side"],
                     signal["volume"],
                     signal["open_price"],
