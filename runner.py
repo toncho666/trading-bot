@@ -3,6 +3,7 @@ import importlib.util
 import ccxt
 import psycopg2
 from datetime import datetime
+import pandas as pd
 
 DB_HOST = os.getenv("DB_HOST")
 DB_NAME = os.getenv("DB_NAME")
