@@ -11,13 +11,13 @@ def trading_strategy(df: pd.DataFrame) -> pd.DataFrame:
     price_change = (df['Close'] - df['Open']) / df['Open']
 
     # Генерируем сигналы на покупку
-    buy_signals = price_change > 0.01
+    buy_signals = price_change > 0.005
     signals.loc[buy_signals, 'side'] = 'buy'
     signals.loc[buy_signals, 'open_price'] = df['Open']
     signals.loc[buy_signals, 'close_price'] = df['Close']
 
     # Генерируем сигналы на продажу
-    sell_signals = price_change < -0.01
+    sell_signals = price_change < -0.005
     signals.loc[sell_signals, 'side'] = 'sell'
     signals.loc[sell_signals, 'open_price'] = df['Open']
     signals.loc[sell_signals, 'close_price'] = df['Close']
