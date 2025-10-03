@@ -1,3 +1,5 @@
+import requests
+
 def send_telegram_message(tg_token, tg_chat_id, message: str):
     """Отправка сообщения в Telegram"""
     if not tg_token or not tg_chat_id:
