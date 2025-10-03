@@ -50,28 +50,31 @@ def run_strategy(file):
     strategy = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(strategy)
 
+    symbol = "BTC/USDT"
+    timeframe = "1h"
+
     # Загружаем данные
-    data = fetch_data("BTC/USDT", "1h")
+    data = fetch_data(symbol, timeframe)
 
     # Стратегия возвращает DataFrame
     signal_df = strategy.trading_strategy(data)
 
-    print('signal_df is')
+    print('signal_df is:')
     print(signal_df)
 
     if signal_df is not None and not signal_df.empty:
         last_row = signal_df.iloc[-1]   # берём последнюю строку
 
         # Проверяем наличие сигнала
-        if "signal" in signal_df.columns and last_row["signal"] != 0:
+        if last_row["side"] in ["buy", "sell"]:
             print('Сигнал присутствует')
             signal_dict = {
                 "symbol": symbol,
                 "timeframe": timeframe,
-                "side": "buy" if last_row["signal"] == 1 else "sell",
+                "side": last_row["side"],
                 "volume": 10,
-                "open_price": float(data["open"].iloc[-1]),
-                "close_price": float(data["close"].iloc[-1]),
+                "open_price": float(last_row["open_price"]),
+                "close_price": float(last_row["close_price"]),
             }
 
             cur.execute(
@@ -94,6 +97,8 @@ def run_strategy(file):
             print(f"[INFO] Сигнал добавлен: {signal_dict}")
         else:
             print('Сигнал отсутствует')
+    else:
+        print('Пустой результат от стратегии')
 
 # Запуск всех стратегий
 for f in os.listdir(strategies_folder):
