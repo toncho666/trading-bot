@@ -56,6 +56,9 @@ def run_strategy(file):
     # Загружаем данные
     data = fetch_data(symbol, timeframe)
 
+    print('data is')
+    print(data)
+
     # Стратегия возвращает DataFrame
     signal_df = strategy.trading_strategy(data)
 
