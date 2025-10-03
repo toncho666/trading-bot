@@ -16,8 +16,6 @@ print(f"DB_NAME: {os.getenv('DB_NAME')}")
 print(f"DB_USER: {os.getenv('DB_USER')}")
 print(f"DB_PASS: {os.getenv('DB_PASS')}")
 
-
-
 # Создаём клиент биржи (Bybit через ccxt)
 exchange = ccxt.okx() #binanceus, okx, bybit
 
@@ -57,6 +55,9 @@ def run_strategy(file):
 
     # Стратегия возвращает DataFrame
     signal_df = strategy.trading_strategy(data)
+
+    print('signal_df is')
+    print(signal_df)
 
     if signal_df is not None and not signal_df.empty:
         last_row = signal_df.iloc[-1]   # берём последнюю строку
