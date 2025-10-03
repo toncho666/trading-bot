@@ -4,11 +4,15 @@ import ccxt
 import psycopg2
 from datetime import datetime
 import pandas as pd
+from tg_notification import send_telegram_message
 
 DB_HOST = os.getenv("DB_HOST")
 DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+
 
 print("Environment variables:")
 print(f"DB_HOST: {os.getenv('DB_HOST')}")
@@ -98,6 +102,22 @@ def run_strategy(file):
             )
             conn.commit()
             print(f"[INFO] Сигнал добавлен: {signal_dict}")
+
+            # отправляем уведомление в Telegram
+            msg = (
+                f"📢 Новый сигнал!\n"
+                f"Стратегия: {os.path.basename(file)}\n"
+                f"Инструмент: {signal_dict['symbol']}\n"
+                f"Таймфрейм: {signal_dict['timeframe']}\n"
+                f"Сторона: {signal_dict['side'].upper()}\n"
+                f"Объём: {signal_dict['volume']}\n"
+                f"Цена открытия: {signal_dict['open_price']}\n"
+                f"Цена закрытия: {signal_dict['close_price']}\n"
+                f"Время: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}"
+            )
+            send_telegram_message(tg_token = TELEGRAM_TOKEN
+                                  ,tg_chat_id = TELEGRAM_CHAT_ID 
+                                  ,message = msg)
         else:
             print('Сигнал отсутствует')
     else:
