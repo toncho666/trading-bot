@@ -1,28 +1,28 @@
 import pandas as pd
 
 def trading_strategy(df: pd.DataFrame) -> pd.DataFrame:
-    # Создаем DataFrame для хранения сигналов
-    signals = pd.DataFrame(index=df.index)
-    signals['side'] = None
-    signals['open_price'] = None
-    signals['close_price'] = None
+    # Берем только последнюю строку
+    last_row = df.iloc[-1]
 
-    # Вычисляем процентное изменение между закрытием и открытием
-    price_change = (df['Close'] - df['Open']) / df['Open']
+    # Считаем процентное изменение
+    price_change = (last_row['Close'] - last_row['Open']) / last_row['Open']
 
-    # Генерируем сигналы на покупку
-    buy_signals = price_change > 0.005
-    signals.loc[buy_signals, 'side'] = 'buy'
-    signals.loc[buy_signals, 'open_price'] = df['Open']
-    signals.loc[buy_signals, 'close_price'] = df['Close']
+    signal = None
+    if price_change >= 0.005:   # рост больше 0.5%
+        signal = {
+            "side": "buy",
+            "open_price": last_row['Open'],
+            "close_price": last_row['Close']
+        }
+    elif price_change <= -0.005:  # падение больше 0.5%
+        signal = {
+            "side": "sell",
+            "open_price": last_row['Open'],
+            "close_price": last_row['Close']
+        }
 
-    # Генерируем сигналы на продажу
-    sell_signals = price_change < -0.005
-    signals.loc[sell_signals, 'side'] = 'sell'
-    signals.loc[sell_signals, 'open_price'] = df['Open']
-    signals.loc[sell_signals, 'close_price'] = df['Close']
-
-    # Удаляем строки без сигналов
-    signals.dropna(inplace=True)
-
-    return signals
+    # Возвращаем DataFrame (как и раньше, только с одной строкой)
+    if signal:
+        return pd.DataFrame([signal])
+    else:
+        return pd.DataFrame(columns=["side", "open_price", "close_price"])
