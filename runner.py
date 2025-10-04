@@ -35,13 +35,13 @@ def run_strategy(file):
     symbol = "BTC/USDT"
     timeframe = "1h"
 
-    # Загружаем данные
+    # Загружаем данные от биржи ToDO - переписать чтобы забирали данные из БД по любому таймфрейму
     data = fetch_data(symbol, timeframe)
 
-    print('data is')
+    print('data is:')
     print(data)
 
-    # Стратегия возвращает DataFrame
+    # Стратегия возвращает DataFrame с сигналами по стратегии
     signal_df = strategy.trading_strategy(data)
 
     print('signal_df is:')
@@ -51,15 +51,15 @@ def run_strategy(file):
         last_row = signal_df.iloc[-1]   # берём последнюю строку
 
         # Проверяем наличие сигнала
-        if last_row["side"] in ["buy", "sell"]:
+        if last_row["signal"] in [1, -1]:
             print('Сигнал присутствует')
             signal_dict = {
                 "symbol": symbol,
                 "timeframe": timeframe,
-                "side": last_row["side"],
+                "side": "buy" if last_row["signal"] in ["1", 1] else "sell" if last_row["signal"] in ["-1", -1]
                 "volume": 10,
-                "open_price": float(last_row["open_price"]),
-                "close_price": float(last_row["close_price"]),
+                "open_price": float(last_row["Open"]),
+                "close_price": float(last_row["Close"]),
             }
 
             cur.execute(
