@@ -55,7 +55,7 @@ def run_strategy(file):
         strategy_name = os.path.splitext(os.path.basename(file))[0]
         table_name = f"signal_df_{strategy_name}"
 
-        signal_df.to_sql(table_name, engine, if_exists="replace", index=True)
+        signal_df.to_sql(table_name, schema = 'test', engine, if_exists="replace", index=True)
         print(f"DataFrame сохранён в таблицу {table_name}")
         
         # берём последнюю строку
