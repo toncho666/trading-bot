@@ -34,10 +34,17 @@ def trading_strategy(df: pd.DataFrame) -> pd.DataFrame:
     
     # Calculate the conditions for sell and buy signals
     for i in range(1, len(df)):
-        prev_close = df.loc[i-1, 'Close']
-        prev_open = df.loc[i-1, 'Open']
-        curr_close = df.loc[i, 'Close']
-        curr_open = df.loc[i, 'Open']
+        # prev_close = df.loc[i-1, 'Close']
+        # prev_open = df.loc[i-1, 'Open']
+        # curr_close = df.loc[i, 'Close']
+        # curr_open = df.loc[i, 'Open']
+        
+        prev_row = df.iloc[i-1]
+        curr_row = df.iloc[i]
+        prev_close = prev_row['Close']
+        prev_open = prev_row['Open']
+        curr_close = curr_row['Close']
+        curr_open = curr_row['Open']
         
         # Sell condition
         if prev_close > prev_open * 1.005 and curr_close < curr_open:
