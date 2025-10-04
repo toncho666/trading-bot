@@ -1,25 +1,37 @@
+# Инструкции когда запускать
 on:
   schedule:
-    - cron: "0 * * * *"    # каждые 5 минут
-  workflow_dispatch:
+    - cron: "0 * * * *"  # Запуск в 0 минут каждого часа (начало часа)
+  workflow_dispatch:     # Возможность ручного запуска из интерфейса GitHub
 
-jobs:
+# Инструкции что запускать
+jobs: # Список задач
   run:
-    runs-on: ubuntu-latest
-    environment: ai_env   # 👈 иначе секреты из этого окружения не подтянутся
+    runs-on: ubuntu-latest  # запускать на свежей виртуальной машине Ubuntu
+
+    environment: ai_env   # Секреты из окружения ai_env
     env:
       DB_HOST: ${{ secrets.DB_HOST }}
       DB_NAME: ${{ secrets.DB_NAME }}
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASS: ${{ secrets.DB_PASS }}
+
+    # Шаги выполнения 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v3       # Скачай код иэ этого репозитория
+      
+      - uses: actions/setup-python@v4   # Установи Python
         with: 
-          python-version: "3.10"
+          python-version: "3.10"        # с параметрами версии
+
+      # Установка используемых в коде библиотек
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      # Шаг для отладки
       - name: Debug ENV
-        run: env | grep DB_
+        run: env | grep DB_  # Показываем все  переменные с префиксом "DB_"
+
+      # Основной шаг - запуск исполняемого модуля
       - name: Run strategies with DB connection
-        run: python runner.py   # ваш файл, который прогоняет все стратегии
+        run: python runner.py   # Файл запуска всех стратегий
