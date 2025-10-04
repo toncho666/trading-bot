@@ -62,12 +62,12 @@ def run_strategy(file):
         last_row = signal_df.iloc[-1]
 
         # Проверяем наличие сигнала
-        if last_row["signal"] in [1, -1]:
+        if last_row["signal"] in ["1", 1, "-1", -1]:
             print('Сигнал присутствует')
             signal_dict = {
                 "symbol": symbol,
                 "timeframe": timeframe,
-                "side": "buy" if last_row["signal"] in ["1", 1] else "sell" if last_row["signal"] in ["-1", -1]
+                "side": "buy" if last_row["signal"] in ["1", 1] else "sell" if last_row["signal"] in ["-1", -1] else None,
                 "volume": 10,
                 "open_price": float(last_row["Open"]),
                 "close_price": float(last_row["Close"]),
