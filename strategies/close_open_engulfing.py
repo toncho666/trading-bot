@@ -19,25 +19,25 @@ def trading_strategy(df: pd.DataFrame) -> pd.DataFrame:
     - None indicates no signal
     
     Parameters:
-    df (pd.DataFrame): DataFrame containing at least 'open' and 'close' columns.
+    df (pd.DataFrame): DataFrame containing at least 'Open' and 'Close' columns.
     
     Returns:
     pd.DataFrame: DataFrame with an additional 'signal' column.
     """
     
     # Ensure the DataFrame has the necessary columns
-    if not {'open', 'close'}.issubset(df.columns):
-        raise ValueError("DataFrame must contain 'open' and 'close' columns")
+    if not {'Open', 'Close'}.issubset(df.columns):
+        raise ValueError("DataFrame must contain 'Open' and 'Close' columns")
     
     # Initialize the signal column with None
     df['signal'] = None
     
     # Calculate the conditions for sell and buy signals
     for i in range(1, len(df)):
-        prev_close = df.loc[i-1, 'close']
-        prev_open = df.loc[i-1, 'open']
-        curr_close = df.loc[i, 'close']
-        curr_open = df.loc[i, 'open']
+        prev_close = df.loc[i-1, 'Close']
+        prev_open = df.loc[i-1, 'Open']
+        curr_close = df.loc[i, 'Close']
+        curr_open = df.loc[i, 'Open']
         
         # Sell condition
         if prev_close > prev_open * 1.005 and curr_close < curr_open:
@@ -48,6 +48,3 @@ def trading_strategy(df: pd.DataFrame) -> pd.DataFrame:
             df.loc[i, 'signal'] = 'buy'
     
     return df
-```
-
-This function implements the described trading strategy by iterating over the DataFrame and checking the conditions for each row, starting from the second row (index 1) since it needs to compare with the previous row. The signals are stored in a new column named 'signal'.
