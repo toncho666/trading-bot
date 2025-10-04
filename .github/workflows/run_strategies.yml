@@ -30,10 +30,14 @@ jobs: # Список задач
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # Шаг для отладки
-      - name: Debug ENV
-        run: env | grep DB_, TELEGRAM_  # Показываем все  переменные с префиксом "DB_"
+      # 1Шаг для отладки
+      - name: Debug DB variables
+        run: env | grep DB_ # Показываем все  переменные с префиксом "DB_"
 
+      # 2Шаг для отладки
+      - name: Debug TG variables
+        run: env | grep TELEGRAM_ # Показываем все  переменные с префиксом "TELEGRAM_"
+        
       # Основной шаг - запуск исполняемого модуля
-      - name: Run strategies with DB connection
+      - name: Run strategies
         run: python runner.py   # Файл запуска всех стратегий
