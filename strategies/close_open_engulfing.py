@@ -1,4 +1,3 @@
-```python
 import pandas as pd
 
 def trading_strategy(df: pd.DataFrame) -> pd.DataFrame:
