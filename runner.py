@@ -63,7 +63,22 @@ def run_strategy(file):
         print(f"DataFrame сохранён в таблицу {table_name}")
         
         # берём последнюю строку
-        last_row = signal_df.iloc[-1]
+        # Текущее время в Московском часовом поясе
+        moscow_tz = pytz.timezone('Europe/Moscow')
+        current_time = datetime.now(moscow_tz)
+
+        # Время последнего закрытого часа (предыдущий час)
+        last_closed_hour = current_time.replace(minute=0, second=0, microsecond=0) - timedelta(hours=1)
+
+        print(f"Текущее время: {current_time}")
+        print(f"Последний закрытый час: {last_closed_hour}")
+        
+        # Ищем запись за последний закрытый час
+        last_closed_row = df[df.index == last_closed_hour].iloc[-1]
+        print('last_closed_row')
+        print(last_closed_row)
+
+        # last_row = signal_df.iloc[-1]
 
         # Проверяем наличие сигнала
         if last_row["signal"] in ["1", 1, "-1", -1]:
@@ -71,10 +86,10 @@ def run_strategy(file):
             signal_dict = {
                 "symbol": symbol,
                 "timeframe": timeframe,
-                "side": "buy" if last_row["signal"] in ["1", 1] else "sell" if last_row["signal"] in ["-1", -1] else None,
+                "side": "buy" if last_closed_row["signal"] in ["1", 1] else "sell" if last_closed_row["signal"] in ["-1", -1] else None,
                 "volume": 10,
-                "open_price": float(last_row["Open"]),
-                "close_price": float(last_row["Close"]),
+                "open_price": float(last_closed_row["Open"]),
+                "close_price": float(last_closed_row["Close"]),
             }
 
             cur.execute(
