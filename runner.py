@@ -1,10 +1,12 @@
+from hist_data import fetch_data
+from tg_notification import send_telegram_message
+
 import os
 import importlib.util
 import ccxt
 import psycopg2
 from datetime import datetime
 import pandas as pd
-from tg_notification import send_telegram_message
 
 DB_HOST = os.getenv("DB_HOST")
 DB_NAME = os.getenv("DB_NAME")
@@ -32,19 +34,6 @@ conn = psycopg2.connect(
     port=5432
 )
 cur = conn.cursor()
-
-def fetch_data(symbol="BTC/USDT", timeframe="1h", limit=100):
-    """Получение исторических данных OHLCV с Binance"""
-    ohlcv = exchange.fetch_ohlcv(symbol, timeframe=timeframe, limit=limit)
-    # Преобразуем в список словарей
-    df = pd.DataFrame(
-        ohlcv,
-        columns=["timestamp", "Open", "High", "Low", "Close", "Volume"]
-    )
-    df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
-    df.set_index("timestamp", inplace=True)
-    return df
-
 
 # Папка со стратегиями
 strategies_folder = "strategies"
