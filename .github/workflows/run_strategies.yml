@@ -15,6 +15,8 @@ jobs: # Список задач
       DB_NAME: ${{ secrets.DB_NAME }}
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASS: ${{ secrets.DB_PASS }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
 
     # Шаги выполнения 
     steps:
@@ -30,7 +32,7 @@ jobs: # Список задач
 
       # Шаг для отладки
       - name: Debug ENV
-        run: env | grep DB_ TELEGRAM_  # Показываем все  переменные с префиксом "DB_"
+        run: env | grep DB_, TELEGRAM_  # Показываем все  переменные с префиксом "DB_"
 
       # Основной шаг - запуск исполняемого модуля
       - name: Run strategies with DB connection
