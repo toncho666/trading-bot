@@ -1,28 +1,21 @@
 import pandas as pd
 
 def trading_strategy(df: pd.DataFrame) -> pd.DataFrame:
-    # Берем только последнюю строку
-    last_row = df.iloc[-1]
+    """
+    Добавляет колонку 'signal' в DataFrame.
+    
+    - 1 если Close > Open на threshold (по умолчанию 0.5%)
+    - -1 если Close < Open на threshold
+    - 0 иначе
+    """
+    df = df.copy()
 
-    # Считаем процентное изменение
-    price_change = (last_row['Close'] - last_row['Open']) / last_row['Open']
+    # рассчитываем процентное изменение
+    change = (df["Close"] - df["Open"]) / df["Open"]
 
-    signal = None
-    if price_change >= 0.005:   # рост больше 0.5%
-        signal = {
-            "side": "buy",
-            "open_price": last_row['Open'],
-            "close_price": last_row['Close']
-        }
-    elif price_change <= -0.005:  # падение больше 0.5%
-        signal = {
-            "side": "sell",
-            "open_price": last_row['Open'],
-            "close_price": last_row['Close']
-        }
+    # логика сигналов
+    df["signal"] = 0
+    df.loc[change > 0.005, "signal"] = 1   # buy
+    df.loc[change < -0.005, "signal"] = -1 # sell
 
-    # Возвращаем DataFrame (как и раньше, только с одной строкой)
-    if signal:
-        return pd.DataFrame([signal])
-    else:
-        return pd.DataFrame(columns=["side", "open_price", "close_price"])
+    return df
