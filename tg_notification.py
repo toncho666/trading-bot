@@ -5,7 +5,7 @@ def send_telegram_message(tg_token, tg_chat_id, message: str):
     if not tg_token or not tg_chat_id:
         print("[WARN] TELEGRAM_TOKEN или TELEGRAM_CHAT_ID не заданы")
         return
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/bot{tg_token}/sendMessage"
     payload = {"chat_id": tg_chat_id, "text": message}
     try:
         response = requests.post(url, data=payload)
