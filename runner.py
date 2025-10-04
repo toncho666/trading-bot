@@ -81,7 +81,7 @@ def run_strategy(file):
         # last_row = signal_df.iloc[-1]
 
         # Проверяем наличие сигнала
-        if last_row["signal"] in ["1", 1, "-1", -1]:
+        if last_closed_row["signal"] in ["1", 1, "-1", -1]:
             print('Сигнал присутствует')
             signal_dict = {
                 "symbol": symbol,
