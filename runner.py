@@ -3,7 +3,6 @@ from tg_notification import send_telegram_message
 
 import os
 import importlib.util
-import ccxt
 import psycopg2
 from datetime import datetime
 import pandas as pd
@@ -14,16 +13,6 @@ DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-
-
-print("Environment variables:")
-print(f"DB_HOST: {os.getenv('DB_HOST')}")
-print(f"DB_NAME: {os.getenv('DB_NAME')}")
-print(f"DB_USER: {os.getenv('DB_USER')}")
-print(f"DB_PASS: {os.getenv('DB_PASS')}")
-
-# Создаём клиент биржи (Bybit через ccxt)
-exchange = ccxt.okx() #binanceus, okx, bybit
 
 # Подключение к Postgres
 conn = psycopg2.connect(
