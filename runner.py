@@ -4,6 +4,7 @@ from tg_notification import send_telegram_message
 import os
 import importlib.util
 import psycopg2
+from sqlalchemy import create_engine
 from datetime import datetime
 import pandas as pd
 
@@ -23,6 +24,8 @@ conn = psycopg2.connect(
     port=5432
 )
 cur = conn.cursor()
+
+engine = create_engine(f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:5432/{DB_NAME}")
 
 # Папка со стратегиями
 strategies_folder = "strategies"
@@ -48,7 +51,15 @@ def run_strategy(file):
     print(signal_df)
 
     if signal_df is not None and not signal_df.empty:
-        last_row = signal_df.iloc[-1]   # берём последнюю строку
+        # сохраняем весь датафрейм в отдельную таблицу
+        strategy_name = os.path.splitext(os.path.basename(file))[0]
+        table_name = f"signal_df_{strategy_name}"
+
+        signal_df.to_sql(table_name, engine, if_exists="replace", index=True)
+        print(f"DataFrame сохранён в таблицу {table_name}")
+        
+        # берём последнюю строку
+        last_row = signal_df.iloc[-1]
 
         # Проверяем наличие сигнала
         if last_row["signal"] in [1, -1]:
