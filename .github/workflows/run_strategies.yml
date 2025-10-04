@@ -30,7 +30,7 @@ jobs: # Список задач
 
       # Шаг для отладки
       - name: Debug ENV
-        run: env | grep DB_, TELEGRAM_  # Показываем все  переменные с префиксом "DB_"
+        run: env | grep DB_ TELEGRAM_  # Показываем все  переменные с префиксом "DB_"
 
       # Основной шаг - запуск исполняемого модуля
       - name: Run strategies with DB connection
