@@ -113,21 +113,27 @@ def run_strategy(file):
             conn.commit()
             print(f"[INFO] Сигнал добавлен: {signal_dict}")
 
+            # формируем уведомление с визуальными маркерами
+            side_emoji = "🟢 BUY 📈" if signal_dict["side"].lower() == "buy" else "🔴 SELL 📉"
+            strategy_name = os.path.basename(file).replace(".py", "")
+
             # отправляем уведомление в Telegram
             msg = (
-                f"📢 Новый сигнал!\n"
-                f"Стратегия: {os.path.basename(file)}\n"
-                f"Инструмент: {signal_dict['symbol']}\n"
-                f"Таймфрейм: {signal_dict['timeframe']}\n"
-                f"Сторона: {signal_dict['side'].upper()}\n"
-                f"Объём: {signal_dict['volume']}\n"
-                f"Цена открытия: {signal_dict['open_price']}\n"
-                f"Цена закрытия: {signal_dict['close_price']}\n"
-                f"Время: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}"
+                f"🚀 *НОВЫЙ СИГНАЛ!*\n\n"
+                f"🎯 *Стратегия:* `{strategy_name}`\n"
+                f"💹 *Инструмент:* {signal_dict['symbol']}\n"
+                f"⏱ *Таймфрейм:* {signal_dict['timeframe']}\n\n"
+                f"{side_emoji}\n"
+                f"📦 *Объём:* {signal_dict['volume']}\n"
+                f"💰 *Цена открытия:* {signal_dict['open_price']}\n"
+                f"💸 *Цена закрытия:* {signal_dict['close_price']}\n\n"
+                f"🕒 {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}"
             )
+
             send_telegram_message(tg_token = TELEGRAM_TOKEN
-                                  ,tg_chat_id = TELEGRAM_CHAT_ID 
-                                  ,message = msg)
+                                 ,tg_chat_id = TELEGRAM_CHAT_ID 
+                                 ,message = msg
+                                 ,parse_mode="Markdown")
         else:
             print('Сигнал отсутствует')
     else:
