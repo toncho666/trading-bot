@@ -87,6 +87,7 @@ def run_strategy(file):
             print('Сигнал присутствует')
             signal_dict = {
                 "symbol": symbol,
+                "timestamp": last_closed_row["timestamp"],
                 "timeframe": timeframe,
                 "side": "buy" if last_closed_row["signal"] in ["1", 1] else "sell" if last_closed_row["signal"] in ["-1", -1] else None,
                 "volume": 10,
@@ -102,6 +103,7 @@ def run_strategy(file):
                 (
                     os.path.basename(file),
                     signal_dict["symbol"],
+                    signal_dict["timestamp"],
                     signal_dict["timeframe"],
                     signal_dict["side"],
                     signal_dict["volume"],
@@ -122,6 +124,7 @@ def run_strategy(file):
                 f"🚀 *НОВЫЙ СИГНАЛ!*\n\n"
                 f"🎯 *Стратегия:* `{strategy_name}`\n"
                 f"💹 *Инструмент:* {signal_dict['symbol']}\n"
+                f"💹 *Дата и время свечи:* {signal_dict['timestamp']}\n"
                 f"⏱ *Таймфрейм:* {signal_dict['timeframe']}\n\n"
                 f"{side_emoji}\n"
                 f"📦 *Объём:* {signal_dict['volume']}\n"
