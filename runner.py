@@ -50,6 +50,8 @@ def run_strategy(file):
 
     print('signal_df is:')
     print(signal_df)
+    print('last_closed_row.index')
+    print(last_closed_row.index)
 
     if signal_df is not None and not signal_df.empty:
         # сохраняем весь датафрейм в отдельную таблицу
