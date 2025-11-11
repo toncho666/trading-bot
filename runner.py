@@ -50,8 +50,6 @@ def run_strategy(file):
 
     print('signal_df is:')
     print(signal_df)
-    print('last_closed_row.index')
-    print(last_closed_row.index)
 
     if signal_df is not None and not signal_df.empty:
         # сохраняем весь датафрейм в отдельную таблицу
@@ -81,9 +79,10 @@ def run_strategy(file):
         last_closed_row = signal_df[signal_df.index == last_closed_hour].iloc[-1]
         print('last_closed_row')
         print(last_closed_row)
+        print('last_closed_row.index')
+        print(last_closed_row.index)
 
-        # last_row = signal_df.iloc[-1]
-
+        
         # Проверяем наличие сигнала
         if last_closed_row["signal"] in ["1", 1, "-1", -1]:
             print('Сигнал присутствует')
