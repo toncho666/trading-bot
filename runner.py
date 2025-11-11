@@ -87,7 +87,7 @@ def run_strategy(file):
             print('Сигнал присутствует')
             signal_dict = {
                 "symbol": symbol,
-                "timestamp": last_closed_row["timestamp"],
+                "timestamp": last_closed_row.index,
                 "timeframe": timeframe,
                 "side": "buy" if last_closed_row["signal"] in ["1", 1] else "sell" if last_closed_row["signal"] in ["-1", -1] else None,
                 "volume": 10,
@@ -97,7 +97,7 @@ def run_strategy(file):
 
             cur.execute(
                 """
-                INSERT INTO test.signals (strategy_name, symbol, timeframe, side, volume, open_price, close_price, created_at)
+                INSERT INTO test.signals (strategy_name, symbol, timestamp, timeframe, side, volume, open_price, close_price, created_at)
                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
                 """,
                 (
