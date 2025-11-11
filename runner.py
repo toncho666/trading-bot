@@ -79,8 +79,8 @@ def run_strategy(file):
         last_closed_row = signal_df[signal_df.index == last_closed_hour].iloc[-1]
         print('last_closed_row')
         print(last_closed_row)
-        print('last_closed_row.index[0]')
-        print(last_closed_row.index[0])
+        print('last_closed_hour')
+        print(last_closed_hour)
 
         
         # Проверяем наличие сигнала
@@ -88,7 +88,7 @@ def run_strategy(file):
             print('Сигнал присутствует')
             signal_dict = {
                 "symbol": symbol,
-                "timestamp": last_closed_row.index[0],
+                "timestamp": last_closed_hour,
                 "timeframe": timeframe,
                 "side": "buy" if last_closed_row["signal"] in ["1", 1] else "sell" if last_closed_row["signal"] in ["-1", -1] else None,
                 "volume": 10,
