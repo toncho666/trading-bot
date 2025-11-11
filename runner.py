@@ -88,7 +88,7 @@ def run_strategy(file):
             print('Сигнал присутствует')
             signal_dict = {
                 "symbol": symbol,
-                "timestamp": last_closed_row.index,
+                "timestamp": last_closed_hour,
                 "timeframe": timeframe,
                 "side": "buy" if last_closed_row["signal"] in ["1", 1] else "sell" if last_closed_row["signal"] in ["-1", -1] else None,
                 "volume": 10,
