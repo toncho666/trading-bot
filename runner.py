@@ -99,7 +99,7 @@ def run_strategy(file):
             cur.execute(
                 """
                 INSERT INTO test.signals (strategy_name, symbol, timestamp, timeframe, side, volume, open_price, close_price, created_at)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 """,
                 (
                     os.path.basename(file),
