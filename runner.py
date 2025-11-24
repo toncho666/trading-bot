@@ -1,5 +1,6 @@
 from hist_data import fetch_data
 from tg_notification import send_telegram_message
+from sl_tp_setter import get_sl_tp_val
 
 import os
 import importlib.util
@@ -121,6 +122,7 @@ def run_strategy(file):
             strategy_name = os.path.basename(file).replace(".py", "")
 
             # отправляем уведомление в Telegram
+            sl, tp = get_sl_tp_val(strategy_name)
             msg = (
                 f"🚀 *НОВЫЙ СИГНАЛ!*\n\n"
                 f"🎯 *Стратегия:* `{strategy_name}`\n"
@@ -131,6 +133,8 @@ def run_strategy(file):
                 f"📦 *Объём:* {signal_dict['volume']}\n"
                 f"💰 *Цена открытия:* {signal_dict['open_price']}\n"
                 f"💸 *Цена закрытия:* {signal_dict['close_price']}\n\n"
+                f"🛡 *Стоп-лосс:* `{sl}` ({signal_dict['close_price']*sl*100:.2f}%)\n"
+                f"🎯 *Тейк-профит:* `{tp}` ({signal_dict['close_price']*tp*100:.2f}%)\n\n"
                 f"🕒 {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}"
             )
 
