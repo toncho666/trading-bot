@@ -2,7 +2,7 @@ from typing import Literal, Tuple
 
 def get_sl_tp_val(strategy_name: str
                  ,side: Literal["buy", "sell", "long", "short"]
-                 ,deal_price: float)-> Tuple[float, float]:
+                 ,deal_price: float):
     """
     Возвращает абсолютные цены Stop‑Loss и Take‑Profit для выбранной стратегии.
 
