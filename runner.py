@@ -122,10 +122,7 @@ def run_strategy(file):
             strategy_name = os.path.basename(file).replace(".py", "")
 
             # отправляем уведомление в Telegram
-            sl, tp = get_sl_tp_val(strategy_name)
-                     get_sl_tp_val(strategy_name
-                                  ,signal_dict["side"].lower()
-                                  ,signal_dict['close_price'])
+            sl, tp = get_sl_tp_val(strategy_name,signal_dict["side"].lower(),signal_dict['close_price'])
             
             msg = (
                 f"🚀 *НОВЫЙ СИГНАЛ!*\n\n"
