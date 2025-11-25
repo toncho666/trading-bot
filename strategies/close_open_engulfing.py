@@ -25,10 +25,6 @@ def trading_strategy(df: pd.DataFrame) -> pd.DataFrame:
     pd.DataFrame: DataFrame with an additional 'signal' column.
     """
     
-    # Ensure the DataFrame has the necessary columns
-    if not {'Open', 'Close'}.issubset(df.columns):
-        raise ValueError("DataFrame must contain 'Open' and 'Close' columns")
-    
     # Initialize the signal column with None
     df['signal'] = None
     
