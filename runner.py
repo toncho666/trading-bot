@@ -123,6 +123,10 @@ def run_strategy(file):
 
             # отправляем уведомление в Telegram
             sl, tp = get_sl_tp_val(strategy_name)
+                     get_sl_tp_val(strategy_name
+                                  ,signal_dict["side"].lower()
+                                  ,signal_dict['close_price'])
+            
             msg = (
                 f"🚀 *НОВЫЙ СИГНАЛ!*\n\n"
                 f"🎯 *Стратегия:* `{strategy_name}`\n"
@@ -133,8 +137,8 @@ def run_strategy(file):
                 f"📦 *Объём:* {signal_dict['volume']}\n"
                 f"💰 *Цена открытия:* {signal_dict['open_price']}\n"
                 f"💸 *Цена закрытия:* {signal_dict['close_price']}\n\n"
-                f"🛡 *Стоп-лосс:* `{sl}` ({signal_dict['close_price']*sl*100:.2f}%)\n"
-                f"🎯 *Тейк-профит:* `{tp}` ({signal_dict['close_price']*tp*100:.2f}%)\n\n"
+                f"🛡 *Стоп-лосс:* {sl:.2f}\n"
+                f"🎯 *Тейк-профит:* {tp:.2f}\n\n"
                 f"🕒 {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}"
             )
 
