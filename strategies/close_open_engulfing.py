@@ -26,7 +26,7 @@ def trading_strategy(df: pd.DataFrame) -> pd.DataFrame:
     """
     
     # Initialize the signal column with None
-    df['signal'] = None
+    df['signal'] = 0
     
     # Calculate the conditions for sell and buy signals
     for i in range(1, len(df)):
