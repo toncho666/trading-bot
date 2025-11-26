@@ -11,7 +11,7 @@ def trading_strategy(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
     # рассчитываем процентное изменение
-    change = (df["Close"] - df["Open"]) / df["Open"]
+    change = (df["close"] - df["open"]) / df["open"]
 
     # логика сигналов
     df["signal"] = 0
