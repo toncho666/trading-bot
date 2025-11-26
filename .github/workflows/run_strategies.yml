@@ -1,3 +1,4 @@
+name: Run Strategies
 # Инструкции когда запускать
 on:
   schedule:
