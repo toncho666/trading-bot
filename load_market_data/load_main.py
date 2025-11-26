@@ -9,6 +9,9 @@ def main():
     # 1. Получение данных
     fetcher = MarketDataFetcher("binance")
     df = fetcher.fetch_ohlcv(symbol, timeframe)
+
+    print('df', df)
+    print('df.info()', df.info())
     
     # 2. Подключение к БД
     client = PostgresClient(
