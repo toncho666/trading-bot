@@ -8,6 +8,12 @@ on:
 jobs:
   fetch:
     runs-on: ubuntu-latest
+    environment: ai_env
+    env:
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASS: ${{ secrets.DB_PASS }}
 
     steps:
       - name: Checkout repo
@@ -23,10 +29,5 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run market data fetcher
-        env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
         run: |
           python load_market_data/load_main.py
