@@ -1,6 +1,7 @@
 from market_data_fetcher import MarketDataFetcher
 from pg_client import PostgresClient
 import os
+import logging
 
 def main():
     symbol = "BTC/USDT"
@@ -11,7 +12,7 @@ def main():
     df = fetcher.fetch_ohlcv(symbol, timeframe)
 
     print('_________________df_________________')
-    print('df', df)
+    print('df', df.head())
     print('_________________df.info()_________________')
     print('df.info()', df.info())
     
