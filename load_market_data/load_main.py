@@ -24,3 +24,7 @@ def main():
 
     # 3. Запись
     client.save_market_data(df, "btc_usd_t")
+
+
+if __name__ == "__main__":
+    main()
