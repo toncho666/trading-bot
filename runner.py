@@ -10,6 +10,10 @@ from datetime import datetime, timedelta
 import pytz
 import pandas as pd
 
+
+# ============================================================
+# 1. Конфигурация окружения
+# ============================================================
 DB_HOST = os.getenv("DB_HOST")
 DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
@@ -17,31 +21,62 @@ DB_PASS = os.getenv("DB_PASS")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-# Подключение к Postgres
+# Папка со стратегиями
+STRATEGIES_FOLDER = "strategies"
+
+SYMBOL = "BTC/USDT"
+TIMEFRAME = "1h"
+TABLE_MD = "test.btc_usd_t"   # таблица с рыночными данными
+
+
+# ============================================================
+# 2. Подключение к БД Postgres
+# ============================================================
+engine = create_engine(
+    f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:5432/{DB_NAME}"
+)
+
 conn = psycopg2.connect(
-    dbname=DB_NAME, 
-    user=DB_USER, 
-    password=DB_PASS, 
-    host=DB_HOST, 
+    dbname=DB_NAME,
+    user=DB_USER,
+    password=DB_PASS,
+    host=DB_HOST,
     port=5432
 )
+conn.autocommit = True
 cur = conn.cursor()
 
-engine = create_engine(f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:5432/{DB_NAME}")
 
-# Папка со стратегиями
-strategies_folder = "strategies"
+# ============================================================
+# 4. Получение последних данных OHLCV из БД
+# ============================================================
+def fetch_market_data(symbol: str, timeframe: str) -> pd.DataFrame:
+    query = text(f"""
+        SELECT *
+        FROM {TABLE_MD}
+        ORDER BY timestamp ASC
+    """)
+
+    df = pd.read_sql(query, engine)
+
+    if df.empty:
+        raise RuntimeError("❌ Нет данных OHLCV в БД для стратегии!")
+
+    df.set_index("timestamp", inplace=True)
+    return df
+
+
+
 
 def run_strategy(file):
     spec = importlib.util.spec_from_file_location("strategy", file)
     strategy = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(strategy)
 
-    symbol = "BTC/USDT"
-    timeframe = "1h"
 
     # Загружаем данные от биржи ToDO - переписать чтобы забирали данные из БД по любому таймфрейму
-    data = fetch_data(symbol, timeframe)
+    # data = fetch_data(SYMBOL, TIMEFRAME)
+    data = fetch_market_data(SYMBOL, TIMEFRAME)
 
     print('data is:')
     print(data)
@@ -88,9 +123,9 @@ def run_strategy(file):
         if last_closed_row["signal"] in ["1", 1, "-1", -1]:
             print('Сигнал присутствует')
             signal_dict = {
-                "symbol": symbol,
+                "symbol": SYMBOL,
                 "timestamp": last_closed_hour,
-                "timeframe": timeframe,
+                "timeframe": TIMEFRAME,
                 "side": "buy" if last_closed_row["signal"] in ["1", 1] else "sell" if last_closed_row["signal"] in ["-1", -1] else None,
                 "volume": 10,
                 "open_price": float(last_closed_row["Open"]),
@@ -149,9 +184,9 @@ def run_strategy(file):
         print('Пустой результат от стратегии')
 
 # Запуск всех стратегий
-for f in os.listdir(strategies_folder):
+for f in os.listdir(STRATEGIES_FOLDER):
     if f.endswith(".py"):
-        run_strategy(os.path.join(strategies_folder, f))
+        run_strategy(os.path.join(STRATEGIES_FOLDER, f))
 
 cur.close()
 conn.close()
