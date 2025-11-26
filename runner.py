@@ -128,8 +128,8 @@ def run_strategy(file):
                 "timeframe": TIMEFRAME,
                 "side": "buy" if last_closed_row["signal"] in ["1", 1] else "sell" if last_closed_row["signal"] in ["-1", -1] else None,
                 "volume": 10,
-                "open_price": float(last_closed_row["Open"]),
-                "close_price": float(last_closed_row["Close"]),
+                "open_price": float(last_closed_row["open"]),
+                "close_price": float(last_closed_row["close"]),
             }
 
             cur.execute(
@@ -169,8 +169,8 @@ def run_strategy(file):
                 f"📦 *Объём:* {signal_dict['volume']}\n"
                 f"💰 *Цена открытия:* {signal_dict['open_price']}\n"
                 f"💸 *Цена закрытия:* {signal_dict['close_price']}\n\n"
-                f"🛡 *Стоп-лосс:* {sl:.2f}\n"
-                f"🎯 *Тейк-профит:* {tp:.2f}\n\n"
+                f"🛡 *SL:* {sl:.1f}\n"
+                f"🎯 *TP:* {tp:.1f}\n\n"
                 f"🕒 {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}"
             )
 
