@@ -10,7 +10,9 @@ def main():
     fetcher = MarketDataFetcher("binance")
     df = fetcher.fetch_ohlcv(symbol, timeframe)
 
+    print('_________________df_________________')
     print('df', df)
+    print('_________________df.info()_________________')
     print('df.info()', df.info())
     
     # 2. Подключение к БД
