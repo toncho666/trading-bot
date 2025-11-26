@@ -5,7 +5,7 @@ from sl_tp_setter import get_sl_tp_val
 import os
 import importlib.util
 import psycopg2
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from datetime import datetime, timedelta
 import pytz
 import pandas as pd
