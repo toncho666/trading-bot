@@ -13,7 +13,7 @@ class MarketDataFetcher:
 
         df = pd.DataFrame(
             raw,
-            columns=["timestamp", "Open", "High", "Low", "Close", "Volume"]
+            columns=["timestamp", "open", "high", "low", "close", "volume"]
         )
 
         # Постобработка
