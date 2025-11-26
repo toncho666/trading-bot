@@ -2,16 +2,16 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 class PostgresClient:
-    def __init__(self, host, port, user, password, database, tbl_nm):
+    def __init__(self, host, port, user, password, database):
         conn_str = f"postgresql://{user}:{password}@{host}:{port}/{database}"
-        self.engine = create_engine(conn_str, pool_pre_ping=True)
-        self.tbl_nm = tbl_nm
+        self.engine = create_engine(conn_str)
 
-    def save_market_data(self, df: pd.DataFrame):
+    def save_market_data(self, df: pd.DataFrame, table: str):
+        """Запись данных в PostgreSQL"""
         df.to_sql(
-            name=self.tbl_nm,
-            schema="test",
+            table,
             self.engine,
             if_exists="append",
-            index=False
+            index=False,
+            schema="test"
         )
