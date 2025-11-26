@@ -3,7 +3,7 @@ from pg_client import PostgresClient
 import os
 
 def main():
-    symbol = "BTC/USDT"
+    symbol = "BTCUSDT"
     timeframe = "1h"
 
     # 1. Получение данных
