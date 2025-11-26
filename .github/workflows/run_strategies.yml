@@ -1,13 +1,21 @@
 name: Run Strategies
 # Инструкции когда запускать
 on:
+  # запуск после пайплайна Fetch Market Data
+  workflow_run:
+    workflows: ["Fetch Market Data"]
+    types:
+      - completed
+  workflow_dispatch: {}     # Возможность ручного запуска из интерфейса GitHub
+
   schedule:
-    - cron: "2 * * * *"  # Запуск в 0 минут каждого часа (начало часа)
-  workflow_dispatch:     # Возможность ручного запуска из интерфейса GitHub
+    - cron: "2 * * * *"
 
 # Инструкции что запускать
 jobs: # Список задач
   run:
+    # запуск только в случае успешного выполнения Fetch Market Data
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest  # запускать на свежей виртуальной машине Ubuntu
 
     environment: ai_env   # Секреты из окружения ai_env
