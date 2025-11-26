@@ -23,8 +23,8 @@ def trading_strategy(df, fast=11, slow=24):
     df = df.copy()
 
     # Скользящие средние
-    df['fast_ma'] = df['Close'].rolling(fast).mean()
-    df['slow_ma'] = df['Close'].rolling(slow).mean()
+    df['fast_ma'] = df['close'].rolling(fast).mean()
+    df['slow_ma'] = df['close'].rolling(slow).mean()
 
     # Разница
     df['diff'] = df['fast_ma'] - df['slow_ma']
