@@ -10,11 +10,11 @@ def trading_strategy(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
     # Previous candle values
-    prev_close = df['Close'].shift(1)
-    prev_open  = df['Open'].shift(1)
+    prev_close = df['close'].shift(1)
+    prev_open  = df['open'].shift(1)
 
-    curr_close = df['Close']
-    curr_open  = df['Open']
+    curr_close = df['close']
+    curr_open  = df['open']
 
     # Conditions
     sell_cond = (prev_close > prev_open * 1.005) & (curr_close < curr_open)
