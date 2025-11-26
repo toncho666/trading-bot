@@ -54,18 +54,18 @@ class PostgresClient:
         query = """
         CREATE TABLE IF NOT EXISTS test.btc_usd_t (
             timestamp   timestamptz NOT NULL,
-            Open        numeric,
-            High        numeric,
-            Low         numeric,
-            Close       numeric,
-            Volume      numeric,
+            open        numeric,
+            high        numeric,
+            low         numeric,
+            close       numeric,
+            volume      numeric,
             symbol      text NOT NULL,
             timeframe   text NOT NULL
         );
         """
         with self.conn.cursor() as cur:
             cur.execute(query)
-        logging.info("Table test.market_data checked/created.")
+        logging.info("Table test.btc_usd_t checked/ensured.")
 
     # --------------------------------------------------------
     # 3. Создание уникального индекса
@@ -90,7 +90,7 @@ class PostgresClient:
             return
 
         columns = [
-            "timestamp", "Open", "High", "Low", "Close", "Volume", "symbol", "timeframe"
+            "timestamp", "open", "high", "low", "close", "volume", "symbol", "timeframe"
         ]
 
         insert_query = f"""
@@ -100,17 +100,8 @@ class PostgresClient:
         """
 
         values = [
-            (
-                row["timestamp"],
-                row["Open"],
-                row["High"],
-                row["Low"],
-                row["Close"],
-                row["Volume"],
-                row["symbol"],
-                row["timeframe"],
-            )
-            for _, row in df[columns].iterrows()
+            tuple(row[col] for col in columns)
+            for _, row in df.iterrows()
         ]
 
         with self.conn.cursor() as cur:
