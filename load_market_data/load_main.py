@@ -18,7 +18,7 @@ def main():
     # 2. Подключение к БД
     client = PostgresClient(
         host = os.getenv("DB_HOST"),
-        port = 5432,
+        port = '5432',
         user = os.getenv("DB_USER"),
         password = os.getenv("DB_PASS"),
         database = os.getenv("DB_NAME")
