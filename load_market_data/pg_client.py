@@ -73,7 +73,7 @@ class PostgresClient:
     def _ensure_index(self):
         query = """
         CREATE UNIQUE INDEX IF NOT EXISTS market_data_idx
-            ON test.market_data (timestamp, symbol, timeframe);
+            ON test.btc_usd_t (timestamp, symbol, timeframe);
         """
         with self.conn.cursor() as cur:
             cur.execute(query)
