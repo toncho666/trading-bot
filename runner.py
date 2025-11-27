@@ -73,9 +73,7 @@ def run_strategy(file):
     strategy = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(strategy)
 
-
     # Загружаем данные от биржи ToDO - переписать чтобы забирали данные из БД по любому таймфрейму
-    # data = fetch_data(SYMBOL, TIMEFRAME)
     data = fetch_market_data(SYMBOL, TIMEFRAME)
 
     print('data is:')
@@ -102,25 +100,17 @@ def run_strategy(file):
         # берём последнюю строку
         # Текущее время в Московском часовом поясе
         moscow_tz = pytz.timezone('Europe/Moscow')
-        # current_time = datetime.now(moscow_tz)
         current_time = datetime.now()
 
         # Время последнего закрытого часа (предыдущий час)
-        # last_closed_hour = current_time.replace(minute=0, second=0, microsecond=0) - timedelta(hours=1)
         last_closed_hour = current_time.replace(minute=0, second=0, microsecond=0, tzinfo=pytz.UTC) - timedelta(hours=1)
 
         print(f"Текущее время: {current_time}")
         print(f"Последний закрытый час: {last_closed_hour}")
         
         # Ищем запись за последний закрытый час
-        # last_closed_row = signal_df[signal_df.index == last_closed_hour].iloc[-1]
         last_closed_row = signal_df[signal_df.index == last_closed_hour].iloc[-1]
-        print('last_closed_row')
-        print(last_closed_row)
-        print('last_closed_hour')
-        print(last_closed_hour)
 
-        
         # Проверяем наличие сигнала
         if last_closed_row["signal"] in ["1", 1, "-1", -1]:
             print('Сигнал присутствует')
