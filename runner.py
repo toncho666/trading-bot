@@ -106,14 +106,15 @@ def run_strategy(file):
         current_time = datetime.now()
 
         # Время последнего закрытого часа (предыдущий час)
-        last_closed_hour = current_time.replace(minute=0, second=0, microsecond=0) - timedelta(hours=1)
+        # last_closed_hour = current_time.replace(minute=0, second=0, microsecond=0) - timedelta(hours=1)
+        last_closed_hour = current_time.replace(minute=0, second=0, microsecond=0, tzinfo=pytz.UTC) - timedelta(hours=1)
 
         print(f"Текущее время: {current_time}")
         print(f"Последний закрытый час: {last_closed_hour}")
         
         # Ищем запись за последний закрытый час
         # last_closed_row = signal_df[signal_df.index == last_closed_hour].iloc[-1]
-        last_closed_row = signal_df[(signal_df.index).replace(tzinfo=pytz.UTC) == last_closed_hour].iloc[-1]
+        last_closed_row = signal_df[signal_df.index == last_closed_hour].iloc[-1]
         print('last_closed_row')
         print(last_closed_row)
         print('last_closed_hour')
