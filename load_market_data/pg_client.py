@@ -17,7 +17,7 @@ class PostgresClient:
 
         self._ensure_schema()
         self._ensure_table()
-        self._truncate_table()
+        # self._truncate_table()
         self._ensure_index()
 
     # --------------------------------------------------------
@@ -52,13 +52,13 @@ class PostgresClient:
     # --------------------------------------------------------
     # 2.1. Очистка таблицы
     # --------------------------------------------------------
-    def _truncate_table(self):
-        query = """
-        TRUNCATE TABLE test.btc_usd_t;
-        """
-        with self.conn.cursor() as cur:
-            cur.execute(query)
-        logging.info("Table test.btc_usd_t clear.")
+    # def _truncate_table(self):
+    #     query = """
+    #     TRUNCATE TABLE test.btc_usd_t;
+    #     """
+    #     with self.conn.cursor() as cur:
+    #         cur.execute(query)
+    #     logging.info("Table test.btc_usd_t clear.")
 
     # --------------------------------------------------------
     # 3. Создание уникального индекса
