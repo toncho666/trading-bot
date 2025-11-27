@@ -58,7 +58,7 @@ def fetch_market_data(symbol: str, timeframe: str) -> pd.DataFrame:
 
 
 
-def backtest_strategy(df: pd.DataFrame, stop_loss: float, take_profit: float) -> Dict:
+def backtest_strategy(df: pd.DataFrame, stop_loss: float, take_profit: float) -> dict:
     df = df.copy()
 
     # --- Create position series (signal forward-fill) ---
