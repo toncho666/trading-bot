@@ -12,7 +12,7 @@ def main():
     df = fetcher.fetch_ohlcv(symbol, timeframe)
 
     print('_________________df_________________')
-    print('df', df.head())
+    print('df', df)
     print('_________________df.info()_________________')
     print('df.info()', df.info())
     
