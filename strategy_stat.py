@@ -64,7 +64,7 @@ def backtest_strategy(
     take_profit: float,
     initial_balance: float = 10000.0,
     trade_size: float = 1.0
-) -> Dict:
+) -> dict:
     """
     Бэктест стратегии с возвратом метрик:
     - total_return
