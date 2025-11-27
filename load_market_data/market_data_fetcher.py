@@ -20,5 +20,6 @@ class MarketDataFetcher:
         df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
         df["symbol"] = symbol
         df["timeframe"] = timeframe
+        df.set_index("timestamp", inplace=True)
         df = df[:-1]
         return df
