@@ -41,10 +41,10 @@ TABLE_MD = "test.btc_usd_t"   # таблица с рыночными данны�
 # ============================================================
 # 4. Получение последних данных OHLCV из БД
 # ============================================================
-def fetch_market_data(symbol: str, timeframe: str) -> pd.DataFrame:
+def fetch_market_data(tbl:str) -> pd.DataFrame:
     query = text(f"""
         SELECT *
-        FROM {TABLE_MD}
+        FROM {tbl}
         ORDER BY timestamp ASC
     """)
 
@@ -176,7 +176,7 @@ def run_strategy_tester(file):
     spec.loader.exec_module(strategy)
     
     # Загружаем данные от биржи ToDO - переписать чтобы забирали данные из БД по любому таймфрейму
-    data = fetch_market_data(SYMBOL, TIMEFRAME)
+    data = fetch_market_data(TABLE_MD)
 
 
     print(f'------------------{file}----------------------')
