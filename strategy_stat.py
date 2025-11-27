@@ -1,5 +1,10 @@
 
+import os
+import importlib.util
 import psycopg2
+from sqlalchemy import create_engine, text
+from datetime import datetime, timedelta
+import pytz
 import pandas as pd
 
 # ============================================================
@@ -19,19 +24,19 @@ TABLE_MD = "test.btc_usd_t"   # таблица с рыночными данны�
 # ============================================================
 # 2. Подключение к БД Postgres
 # ============================================================
-engine = create_engine(
-    f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:5432/{DB_NAME}"
-)
+# engine = create_engine(
+#     f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:5432/{DB_NAME}"
+# )
 
-conn = psycopg2.connect(
-    dbname=DB_NAME,
-    user=DB_USER,
-    password=DB_PASS,
-    host=DB_HOST,
-    port=5432
-)
-conn.autocommit = True
-cur = conn.cursor()
+# conn = psycopg2.connect(
+#     dbname=DB_NAME,
+#     user=DB_USER,
+#     password=DB_PASS,
+#     host=DB_HOST,
+#     port=5432
+# )
+# conn.autocommit = True
+# cur = conn.cursor()
 
 # ============================================================
 # 4. Получение последних данных OHLCV из БД
@@ -50,10 +55,6 @@ def fetch_market_data(symbol: str, timeframe: str) -> pd.DataFrame:
 
     df.set_index("timestamp", inplace=True)
     return df
-
-
-
-
 
 
 
@@ -78,7 +79,7 @@ def backtest_strategy(df: pd.DataFrame, stop_loss: float, take_profit: float) ->
     trades = []
 
     for i, row in df.iterrows():
-        price = row['Close']
+        price = row['close']
         pos = row['position']
 
         # Open new position
@@ -131,7 +132,7 @@ def backtest_strategy(df: pd.DataFrame, stop_loss: float, take_profit: float) ->
 
     # Close last position at end
     if in_position:
-        last_price = df.iloc[-1]['Close']
+        last_price = df.iloc[-1]['close']
         pnl = (last_price - entry_price) / entry_price * 100 if entry_signal == 1 else (entry_price - last_price) / entry_price * 100
         
         trades.append({
@@ -169,32 +170,62 @@ def backtest_strategy(df: pd.DataFrame, stop_loss: float, take_profit: float) ->
     }
 
 
-
-spec = importlib.util.spec_from_file_location("strategy", file)
-strategy = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(strategy)
-
-# Загружаем данные от биржи ToDO - переписать чтобы забирали данные из БД по любому таймфрейму
-data = fetch_market_data(SYMBOL, TIMEFRAME)
-
-print('data is:')
-print(data)
-
-# Стратегия возвращает DataFrame с сигналами по стратегии
-signal_df = strategy.trading_strategy(data)
-
-print('signal_df is:')
-print(signal_df)
-
-result = backtest_strategy(
-        df=signal_df,
-        stop_loss_pct=0.5,   # 2% стоп-лосс
-        take_profit_pct=1.5, # 5% тейк-профит
-        initial_balance=10000.0,
-        trade_size=0.5       # 10% капитала на сделку
-    )
-
-print('result')
-print(result)
+def run_strategy_tester(file):
+    spec = importlib.util.spec_from_file_location("strategy", file)
+    strategy = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(strategy)
+    
+    # Загружаем данные от биржи ToDO - переписать чтобы забирали данные из БД по любому таймфрейму
+    data = fetch_market_data(SYMBOL, TIMEFRAME)
 
 
+    print(f'------------------{file}----------------------')
+    print('data is:')
+    print(data)
+    
+    # Стратегия возвращает DataFrame с сигналами по стратегии
+    signal_df = strategy.trading_strategy(data)
+    
+    print('signal_df is:')
+    print(signal_df)
+    
+    result = backtest_strategy(
+            df=signal_df,
+            stop_loss_pct=0.5,   # 0.5% стоп-лосс
+            take_profit_pct=1.5, # 1.5% тейк-профит
+            initial_balance=10000.0,
+            trade_size=0.5       # 50% капитала на сделку
+        )
+    
+    print('result')
+    print(result)
+    print('---------------------------------')
+
+
+
+
+
+
+
+
+engine = create_engine(
+    f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:5432/{DB_NAME}"
+)
+
+conn = psycopg2.connect(
+    dbname=DB_NAME,
+    user=DB_USER,
+    password=DB_PASS,
+    host=DB_HOST,
+    port=5432
+)
+conn.autocommit = True
+cur = conn.cursor()
+
+# Запуск всех стратегий
+for f in os.listdir(STRATEGIES_FOLDER):
+    if f.endswith(".py"):
+        run_strategy_tester(os.path.join(STRATEGIES_FOLDER, f))
+
+cur.close()
+conn.close()
