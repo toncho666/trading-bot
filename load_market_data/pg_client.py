@@ -1,22 +1,3 @@
-# import pandas as pd
-# from sqlalchemy import create_engine
-
-# class PostgresClient:
-#     def __init__(self, host, port, user, password, database):
-#         conn_str = f"postgresql://{user}:{password}@{host}:{port}/{database}"
-#         self.engine = create_engine(conn_str)
-
-#     def save_market_data(self, df: pd.DataFrame, table: str):
-#         """Запись данных в PostgreSQL"""
-#         df.to_sql(
-#             table,
-#             self.engine,
-#             if_exists="append",
-#             index=False,
-#             schema="test"
-#         )
-
-
 import psycopg2
 import psycopg2.extras
 import pandas as pd
@@ -36,6 +17,7 @@ class PostgresClient:
 
         self._ensure_schema()
         self._ensure_table()
+        self._truncate_table()
         self._ensure_index()
 
     # --------------------------------------------------------
@@ -66,6 +48,17 @@ class PostgresClient:
         with self.conn.cursor() as cur:
             cur.execute(query)
         logging.info("Table test.btc_usd_t checked/ensured.")
+
+    # --------------------------------------------------------
+    # 2.1. Очистка таблицы
+    # --------------------------------------------------------
+    def _truncate_table(self):
+        query = """
+        TRUNCATE TABLE test.btc_usd_t;
+        """
+        with self.conn.cursor() as cur:
+            cur.execute(query)
+        logging.info("Table test.btc_usd_t clear.")
 
     # --------------------------------------------------------
     # 3. Создание уникального индекса
