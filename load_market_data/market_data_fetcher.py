@@ -20,5 +20,5 @@ class MarketDataFetcher:
         df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
         df["symbol"] = symbol
         df["timeframe"] = timeframe
-
+        df = df[:-1]
         return df
