@@ -2,7 +2,7 @@ name: Strategy tester
 
 on:
   schedule:
-    - cron: "40 12 * * *"   # запуск каждый час
+    - cron: "0 12 * * 5"   # запуск в 15 (МСК) по пятницам
   workflow_dispatch: {}
 
 jobs:
