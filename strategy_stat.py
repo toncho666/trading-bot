@@ -265,21 +265,13 @@ def run_strategy_tester(file):
     spec = importlib.util.spec_from_file_location("strategy", file)
     strategy = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(strategy)
-    
+
     # Загружаем данные от биржи ToDO - переписать чтобы забирали данные из БД по любому таймфрейму
     data = fetch_market_data(TABLE_MD)
 
-
-    print(f'------------------{file}----------------------')
-    print('data is:')
-    print(data)
-    
     # Стратегия возвращает DataFrame с сигналами по стратегии
     signal_df = strategy.trading_strategy(data)
-    
-    print('signal_df is:')
-    print(signal_df)
-    
+
     result = backtest_strategy(
             df=signal_df,
             stop_loss_pct=0.5,   # 0.5% стоп-лосс
@@ -287,10 +279,13 @@ def run_strategy_tester(file):
             initial_balance=10000.0,
             trade_size=0.5       # 50% капитала на сделку
         )
-    
+
+    print(f'----------------{strategy}-----------------')
     print('result')
     print(result)
-    print('---------------------------------')
+    for key, value in result:
+        print(f'{key}: {result[key]} ')
+    print(f'----------------strategy {strategy} end-----------------')
 
 
 
