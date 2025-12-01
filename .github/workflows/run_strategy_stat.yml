@@ -14,6 +14,8 @@ jobs:
       DB_NAME: ${{ secrets.DB_NAME }}
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASS: ${{ secrets.DB_PASS }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
 
     steps:
       - name: Checkout repo
