@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import pytz
 import pandas as pd
 import re
+from tg_notification import send_telegram_message
 
 # ============================================================
 # 1. Конфигурация окружения
@@ -281,6 +282,8 @@ def run_strategy_tester(file):
     # Стратегия возвращает DataFrame с сигналами по стратегии
     signal_df = strategy.trading_strategy(data)
 
+    print('signal_df', signal_df)
+    
     strategy_nm = os.path.basename(file).replace(".py", "")
     
     result = backtest_strategy(
@@ -300,6 +303,22 @@ def run_strategy_tester(file):
         print(f'{key}: {result[key]} ')
     print(f'----------------strategy {strategy} end-----------------')
 
+    # start_date = datetime(2024, 1, 1)   # пример — подставьте свою дату начала
+    # end_date = datetime.utcnow()
+    # days = (end_date - start_date).days
+
+    # msg = (
+    #     "📊 *{strategy_nm}*\n\n"
+    #     f"📅 *Дата начала:* `{start_date.strftime('%Y-%m-%d')}`\n"
+    #     f"📅 *Дата конца:* `{end_date.strftime('%Y-%m-%d')}`\n"
+    #     f"⏳ *Период теста:* `{days} дней`\n\n"
+    #     f"💰 *Общая доходность:* `{result['total_return']:.2f}%`\n\n"
+    #     f"🎯 *Win-rate:* `{result['win_rate']:.1f}%`\n"
+    #     f"🔄 *Всего сделок:* `{result['total_trades']}`\n"
+    #     f"📈 *Средняя прибыль на сделку:* `{result['avg_trade']:.3f}%`\n"
+    #     f"⚖️ *Коэффициент Шарпа:* `{result['sharpe_ratio']:.3f}`\n\n"
+    #     f"🕒 Отчёт сформирован: {end_date.strftime('%Y-%m-%d %H:%M:%S UTC')}"
+    # )
 
 
 
