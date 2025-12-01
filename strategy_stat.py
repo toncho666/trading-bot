@@ -305,7 +305,7 @@ def run_strategy_tester(file):
         print(f'{key}: {result[key]} ')
     print(f'----------------strategy {strategy} end-----------------')
 
-    start_date = signal_df.index.min()   # пример — подставьте свою дату начала
+    start_date = signal_df.index.min()
     end_date = signal_df.index.max()
     days = (end_date - start_date).days
 
