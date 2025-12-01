@@ -261,6 +261,13 @@ def backtest_strategy(
     }
 
 
+strategies = {
+        "close_open_1pct": {"sl": 0.01,  "tp": 0.025},
+        "close_open_engulfing": {"sl": 0.01,  "tp": 0.02},
+        "macd": {"sl": 0.01,  "tp": 0.025},
+    }
+
+
 def run_strategy_tester(file):
     spec = importlib.util.spec_from_file_location("strategy", file)
     strategy = importlib.util.module_from_spec(spec)
@@ -283,7 +290,7 @@ def run_strategy_tester(file):
     print(f'----------------{strategy}-----------------')
     print('result')
     print(result)
-    for key, value in result:
+    for key in result:
         print(f'{key}: {result[key]} ')
     print(f'----------------strategy {strategy} end-----------------')
 
