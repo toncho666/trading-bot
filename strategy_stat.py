@@ -281,7 +281,7 @@ def run_strategy_tester(file):
     # Стратегия возвращает DataFrame с сигналами по стратегии
     signal_df = strategy.trading_strategy(data)
 
-    strategy_nm = re.search(r"/([^/]+)\.py'>", strategy)
+    strategy_nm = re.search(r"/([^/]+)\.py'>", str(strategy))
     
     result = backtest_strategy(
             df=signal_df,
