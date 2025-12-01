@@ -283,6 +283,8 @@ def run_strategy_tester(file):
     signal_df = strategy.trading_strategy(data)
 
     print('signal_df', signal_df)
+    print('min index', signal_df.index.min())
+    print('max index', signal_df.index.min())
     
     strategy_nm = os.path.basename(file).replace(".py", "")
     
