@@ -284,7 +284,7 @@ def run_strategy_tester(file):
 
     print('signal_df', signal_df)
     print('min index', signal_df.index.min())
-    print('max index', signal_df.index.min())
+    print('max index', signal_df.index.max())
     
     strategy_nm = os.path.basename(file).replace(".py", "")
     
@@ -305,22 +305,27 @@ def run_strategy_tester(file):
         print(f'{key}: {result[key]} ')
     print(f'----------------strategy {strategy} end-----------------')
 
-    # start_date = datetime(2024, 1, 1)   # пример — подставьте свою дату начала
-    # end_date = datetime.utcnow()
-    # days = (end_date - start_date).days
+    start_date = signal_df.index.min()   # пример — подставьте свою дату начала
+    end_date = signal_df.index.max()
+    days = (end_date - start_date).days
 
-    # msg = (
-    #     "📊 *{strategy_nm}*\n\n"
-    #     f"📅 *Дата начала:* `{start_date.strftime('%Y-%m-%d')}`\n"
-    #     f"📅 *Дата конца:* `{end_date.strftime('%Y-%m-%d')}`\n"
-    #     f"⏳ *Период теста:* `{days} дней`\n\n"
-    #     f"💰 *Общая доходность:* `{result['total_return']:.2f}%`\n\n"
-    #     f"🎯 *Win-rate:* `{result['win_rate']:.1f}%`\n"
-    #     f"🔄 *Всего сделок:* `{result['total_trades']}`\n"
-    #     f"📈 *Средняя прибыль на сделку:* `{result['avg_trade']:.3f}%`\n"
-    #     f"⚖️ *Коэффициент Шарпа:* `{result['sharpe_ratio']:.3f}`\n\n"
-    #     f"🕒 Отчёт сформирован: {end_date.strftime('%Y-%m-%d %H:%M:%S UTC')}"
-    # )
+    msg = (
+        f"📊 *{strategy_nm}*\n\n"
+        f"📅 *Дата начала:* `{start_date.strftime('%Y-%m-%d')}`\n"
+        f"📅 *Дата конца:* `{end_date.strftime('%Y-%m-%d')}`\n"
+        f"⏳ *Период теста:* `{days} дней`\n\n"
+        f"💰 *Общая доходность:* `{result['total_return']:.2f}%`\n\n"
+        f"🎯 *Win-rate:* `{result['win_rate']:.1f}%`\n"
+        f"🔄 *Всего сделок:* `{result['total_trades']}`\n"
+        f"📈 *Средняя прибыль на сделку:* `{result['avg_trade']:.3f}%`\n"
+        f"⚖️ *Коэффициент Шарпа:* `{result['sharpe_ratio']:.3f}`\n\n"
+        f"🕒 Отчёт сформирован: {end_date.strftime('%Y-%m-%d %H:%M:%S UTC')}"
+    )
+
+    send_telegram_message(tg_token = TELEGRAM_TOKEN
+                         ,tg_chat_id = TELEGRAM_CHAT_ID 
+                         ,message = msg
+                         ,parse_mode="Markdown")
 
 
 
