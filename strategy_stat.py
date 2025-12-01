@@ -289,7 +289,7 @@ def run_strategy_tester(file):
             trade_size=0.5       # 50% капитала на сделку
         )
 
-    print(f'----------------{os.path.basename(strategy).replace(".py", "")}-----------------')
+    print(f'----------------{strategy}-----------------')
     print('result')
     print(result)
     for key in result:
