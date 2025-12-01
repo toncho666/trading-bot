@@ -6,6 +6,7 @@ from sqlalchemy import create_engine, text
 from datetime import datetime, timedelta
 import pytz
 import pandas as pd
+import re
 
 # ============================================================
 # 1. Конфигурация окружения
@@ -256,8 +257,8 @@ def backtest_strategy(
         'win_rate': win_rate,
         'total_trades': len(trades_df),
         'avg_trade': avg_trade,
-        'sharpe_ratio': sharpe,
-        'trades': trades_df
+        'sharpe_ratio': sharpe
+        # 'trades': trades_df
     }
 
 
@@ -269,6 +270,7 @@ strategies = {
 
 
 def run_strategy_tester(file):
+    
     spec = importlib.util.spec_from_file_location("strategy", file)
     strategy = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(strategy)
@@ -279,6 +281,8 @@ def run_strategy_tester(file):
     # Стратегия возвращает DataFrame с сигналами по стратегии
     signal_df = strategy.trading_strategy(data)
 
+    strategy_nm = re.search(r"/([^/]+)\.py'>", strategy)
+    
     result = backtest_strategy(
             df=signal_df,
             stop_loss_pct=0.5,   # 0.5% стоп-лосс
@@ -289,7 +293,7 @@ def run_strategy_tester(file):
             trade_size=0.5       # 50% капитала на сделку
         )
 
-    print(f'----------------{strategy}-----------------')
+    print(f'----------------{strategy_nm}-----------------')
     print('result')
     print(result)
     for key in result:
