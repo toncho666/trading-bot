@@ -286,9 +286,9 @@ def run_strategy_tester(file):
     result = backtest_strategy(
             df=signal_df,
             # stop_loss_pct=0.5,   # 0.5% стоп-лосс
-            stop_loss_pct=strategies[strategy]['sl'],   # 0.5% стоп-лосс
+            stop_loss_pct=strategies[strategy_nm]['sl'],   # 0.5% стоп-лосс
             # take_profit_pct=1.5, # 1.5% тейк-профит
-            take_profit_pct=strategies[strategy]['tp'], # 1.5% тейк-профит
+            take_profit_pct=strategies[strategy_nm]['tp'], # 1.5% тейк-профит
             initial_balance=10000.0,
             trade_size=0.5       # 50% капитала на сделку
         )
