@@ -281,7 +281,7 @@ def run_strategy_tester(file):
     # Стратегия возвращает DataFrame с сигналами по стратегии
     signal_df = strategy.trading_strategy(data)
 
-    strategy_nm = re.search(r"/([^/]+)\.py'>", file)
+    # strategy_nm = re.search(r"/([^/]+)\.py'>", file)
     
     result = backtest_strategy(
             df=signal_df,
@@ -293,7 +293,7 @@ def run_strategy_tester(file):
             trade_size=0.5       # 50% капитала на сделку
         )
 
-    print(f'----------------{strategy_nm}-----------------')
+    print(f'----------------{file}-----------------')
     print('result')
     print(result)
     for key in result:
