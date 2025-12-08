@@ -1,0 +1,2 @@
+API_KEY = "ВАШ_API_KEY"
+API_SECRET = "ВАШ_SECRET"
