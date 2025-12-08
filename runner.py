@@ -144,10 +144,28 @@ def run_strategy(file):
             conn.commit()
             print(f"[INFO] Сигнал добавлен: {signal_dict}")
 
+
+            ####################################
+            # Исполнение сделки на бирже
+            ####################################
+            # test_signal = {
+            #     "symbol": "BTCUSDT",
+            #     "signal": 1,
+            #     "entry_type": "limit",
+            #     "entry_price": 42900,
+            #     "stop_loss": 42500,
+            #     "take_profit": 44000,
+            #     "qty": 0.01
+            # }
+            
+            # execute_signal(test_signal)
+
+
+            
             # формируем уведомление с визуальными маркерами
             side_emoji = "🟢 BUY 📈" if signal_dict["side"].lower() == "buy" else "🔴 SELL 📉"
             strategy_name = os.path.basename(file).replace(".py", "")
-
+            
             # отправляем уведомление в Telegram
             sl, tp = get_sl_tp_val(strategy_name,signal_dict["side"].lower(),signal_dict['close_price'])
             
