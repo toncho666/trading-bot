@@ -10,12 +10,7 @@ from datetime import datetime, timedelta
 import pytz
 import pandas as pd
 
-
 from trading_executor.trader import BybitTrader
-
-
-
-
 
 # ============================================================
 # 1. Конфигурация окружения
@@ -26,14 +21,11 @@ DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-
 # Папка со стратегиями
 STRATEGIES_FOLDER = "strategies"
-
 SYMBOL = "BTC/USDT"
 TIMEFRAME = "1h"
 TABLE_MD = "test.btc_usd_t"   # таблица с рыночными данными
-
 
 # ============================================================
 # 2. Подключение к БД Postgres
@@ -52,9 +44,8 @@ conn = psycopg2.connect(
 conn.autocommit = True
 cur = conn.cursor()
 
-
 # ============================================================
-# 4. Получение последних данных OHLCV из БД
+# 3. Получение последних данных OHLCV из БД
 # ============================================================
 def fetch_market_data(symbol: str, timeframe: str) -> pd.DataFrame:
     query = text(f"""
@@ -70,8 +61,6 @@ def fetch_market_data(symbol: str, timeframe: str) -> pd.DataFrame:
 
     df.set_index("timestamp", inplace=True)
     return df
-
-
 
 
 def run_strategy(file):
