@@ -3,10 +3,18 @@
 """
 
 import logging
+import uuid
 from typing import Optional
 
 from pybybit import Bybit   # клиент v5
-from .config import API_KEY, API_SECRET, BASE_URL, DEFAULT_LEVERAGE, DEFAULT_ORDER_TYPE, DEFAULT_TIME_IN_FORCE
+from .config import (
+    API_KEY,
+    API_SECRET,
+    BASE_URL,
+    DEFAULT_LEVERAGE,
+    DEFAULT_ORDER_TYPE,
+    DEFAULT_TIME_IN_FORCE,
+)
 from .utils import round_price, calc_qty_from_percent
 
 # ----------------------------------------------------------------------
@@ -18,8 +26,12 @@ log = logging.getLogger("BybitTrader")
 
 
 class BybitTrader:
-    def __init__(self, api_key: str = API_KEY, api_secret: str = API_SECRET,
-                 base_url: str = BASE_URL):
+    def __init__(
+        self,
+        api_key: str = API_KEY,
+        api_secret: str = API_SECRET,
+        base_url: str = BASE_URL,
+    ):
         """
         Инициализация клиента.
         """
@@ -63,70 +75,76 @@ class BybitTrader:
         log.info("Leverage for %s set to %sx", symbol, leverage)
 
     # ------------------------------------------------------------------
-    # 4️⃣ Основная функция – исполнение сигнала
+    # 4️⃣ Основная функция – исполнение сигнала с OCO отдерами SL/TP
     # ------------------------------------------------------------------
-    def execute_signal(self,
-                       signal: int,
-                       symbol: str,
-                       stoploss: float,
-                       takeprofit: float,
-                       percent_of_balance: float,
-                       order_type: str = DEFAULT_ORDER_TYPE,
-                       time_in_force: str = DEFAULT_TIME_IN_FORCE,
-                       leverage: Optional[int] = None):
+    def execute_signal(
+        self,
+        signal: int,
+        symbol: str,
+        stoploss: float,
+        takeprofit: float,
+        percent_of_balance: float,
+        order_type: str = DEFAULT_ORDER_TYPE,
+        time_in_force: str = DEFAULT_TIME_IN_FORCE,
+        leverage: Optional[int] = None,
+    ) -> dict:
         """
         Параметры:
-        • signal – 1 (buy) или -1 (sell)
-        • symbol – например "BTCUSDT"
-        • stoploss / takeprofit – цены (не %)
-        • percent_of_balance – какая часть USDT‑баланса будет задействована
-        • order_type – "Market" или "Limit"
-        • time_in_force – "GoodTillCancel", "ImmediateOrCancel" и т.д.
-        • leverage – при необходимости переопределить (по умолчанию DEFAULT_LEVERAGE)
+            signal               – 1 (BUY) / -1 (SELL)
+            symbol               – тикер, например "BTCUSDT"
+            stoploss, takeprofit – цены (не %)
+            percent_of_balance   – % от свободного USDT‑баланса
+            order_type           – "Market" или "Limit"
+            leverage (опц.)      – если нужен отдельный уровень плеча
         """
         if signal not in (1, -1):
-            raise ValueError("Signal must be 1 (buy) or -1 (sell)")
+            raise ValueError("signal must be 1 (buy) or -1 (sell)")
 
-        # 1️⃣ Получаем рыночные параметры
+        # ------------------------------------------------------------------
+        # 1️⃣ Получаем параметры символа (tickSize, lotSize)
+        # ------------------------------------------------------------------
         info = self._get_symbol_info(symbol)
         tick_size = float(info["priceFilter"]["tickSize"])
         lot_size = float(info["lotSizeFilter"]["qtyStep"])
 
-        # 2️⃣ Текущий баланс и размер ордера
+        # ------------------------------------------------------------------
+        # 2️⃣ Расчёт объёма позиции в лотах
+        # ------------------------------------------------------------------
         balance = self._get_usdt_balance()
-        # Текущая цена нужен только для расчёта количества,
-        # но лучше взять лучшую цену из книги (bid/ask) – это уже ниже задержки.
-        order_book = self.client.market.orderbook_legacy(symbol=symbol, limit=1)   # столбцы: bidPrice/askPrice
+        # берём лучшую цену из книги, чтобы не «переплатить» при лимитном входе
+        order_book = self.client.market.orderbook_legacy(symbol=symbol, limit=1)
         if order_book["retCode"] != 0:
-            raise RuntimeError(f"Не удалось получить Orderbook: {order_book['retMsg']}")
+            raise RuntimeError(f"orderbook error: {order_book['retMsg']}")
 
-        best_price = float(order_book["result"]["b"][0]["price"]) if signal == 1 else \
-                     float(order_book["result"]["a"][0]["price"])
-
+        best_price = (
+            float(order_book["result"]["a"][0]["price"])
+            if signal == -1
+            else float(order_book["result"]["b"][0]["price"])
+        )
         qty = calc_qty_from_percent(balance, percent_of_balance, best_price, lot_size)
+
         if qty <= 0:
-            raise RuntimeError("Расчётный размер позиции оказался нулевым – проверьте баланс/процент/lotSize.")
+            raise RuntimeError(
+                "Calculated quantity is zero – check balance, percent or lotSize"
+            )
+        log.info(
+            "Qty %.6f (balance %.2f USDT, %.2f%%, price %.2f)",
+            qty,
+            balance,
+            percent_of_balance,
+            best_price,
+        )
 
-        log.info("Calculated qty: %.6f (balance %.2f USDT, %.2f%%, price %.2f)",
-                 qty, balance, percent_of_balance, best_price)
-
-        # 3️⃣ При необходимости выставляем плечо
+        # ------------------------------------------------------------------
+        # 3️⃣ Плечо (если передано)
+        # ------------------------------------------------------------------
         if leverage:
             self.set_leverage(symbol, leverage)
 
-        # 4️⃣ Формируем параметры ордера
+        # ------------------------------------------------------------------
+        # 4️⃣ Открывающий ордер (Market/Limit)
+        # ------------------------------------------------------------------
         side = "Buy" if signal == 1 else "Sell"
-
-        # Если Limit‑ордер, то price = best_price (можно добавить небольшую поправку)
-        price = round_price(best_price, tick_size) if order_type == "Limit" else None
-
-        # Параметры Stop‑Loss и Take‑Profit – отдельные ордера (OCO)
-        sl_price = round_price(stoploss, tick_size)
-        tp_price = round_price(takeprofit, tick_size)
-
-        # ------------------------------------------------------------------
-        # 5️⃣ Открываем позицию (Limit/Market)
-        # ------------------------------------------------------------------
         entry_params = {
             "symbol": symbol,
             "orderType": order_type,
@@ -134,36 +152,44 @@ class BybitTrader:
             "qty": qty,
             "timeInForce": time_in_force,
         }
-        if price:
-            entry_params["price"] = price
+        if order_type == "Limit":
+            entry_params["price"] = round_price(best_price, tick_size)
 
         entry_resp = self.client.order.create(**entry_params)
         if entry_resp["retCode"] != 0:
-            raise RuntimeError(f"Не удалось открыть позицию: {entry_resp['retMsg']}")
+            raise RuntimeError(f"Entry order error: {entry_resp['retMsg']}")
         log.info("Entry order placed: %s", entry_resp["result"])
 
         # ------------------------------------------------------------------
-        # 6️⃣ Устанавливаем SL и TP через conditional orders (OCO)
+        # 5️⃣ Получаем текущую позицию (нужен avgEntryPrice для SL)
         # ------------------------------------------------------------------
-        # После создания позиции нам понадобится orderId, чтобы привязать
-        # стоп‑лимитные ордера к ней. Для простоты сделаем две отдельные ордера:
-        #   • Stop‑Loss  – условный ордер типа "Stop"
-        #   • Take‑Profit – ордер типа "TakeProfit"
-        # При этом обе они будут «reduceOnly», т.е. только закрывают.
+        pos_resp = self.client.position.list(symbol=symbol)
+        if pos_resp["retCode"] != 0:
+            raise RuntimeError(f"Position list error: {pos_resp['retMsg']}")
 
-        # Получаем актуальный order ID / позицию
-        position_info = self.client.position.list(symbol=symbol)
-        if position_info["retCode"] != 0:
-            raise RuntimeError("Не удалось получить информацию о позиции")
-        # Выбираем позицию текущего направления
-        cur_pos = [p for p in position_info["result"] if float(p["size"]) > 0 and p["side"] == side.lower()]
+        # Фильтруем позицию в нужном направлении
+        cur_pos = [
+            p
+            for p in pos_resp["result"]
+            if float(p["size"]) > 0 and p["side"] == side.lower()
+        ]
         if not cur_pos:
-            raise RuntimeError("Позиция не найдена после входа")
+            raise RuntimeError("Opened position not found – maybe entry not filled yet")
         entry_price = float(cur_pos[0]["avgEntryPrice"])
         log.info("Opened %s %s @ %.2f", side, symbol, entry_price)
 
-        # Стоп‑лосс
-        sl_params = {
+        # ------------------------------------------------------------------
+        # 6️⃣ Формируем пакет OCO (StopLoss + TakeProfit)
+        # ------------------------------------------------------------------
+        # Уникальный идентификатор, связывающий два ордера.
+        oco_link_id = str(uuid.uuid4())
+
+        # Округляем цены в соответствии с tickSize
+        sl_price = round_price(stoploss, tick_size)
+        tp_price = round_price(takeprofit, tick_size)
+
+        # 6.1 Stop‑Loss (type = "Stop")
+        sl_order = {
             "symbol": symbol,
             "orderType": "Stop",
             "side": "Sell" if signal == 1 else "Buy",
@@ -173,14 +199,11 @@ class BybitTrader:
             "timeInForce": "GoodTillCancel",
             "reduceOnly": True,
             "closeOnTrigger": True,
+            "orderLinkId": oco_link_id,  # <-- связываем
         }
-        sl_resp = self.client.order.create(**sl_params)
-        if sl_resp["retCode"] != 0:
-            raise RuntimeError(f"Не удалось установить StopLoss: {sl_resp['retMsg']}")
-        log.info("StopLoss set at %.2f", sl_price)
 
-        # Тейк‑профит
-        tp_params = {
+        # 6.2 Take‑Profit (type = "TakeProfit")
+        tp_order = {
             "symbol": symbol,
             "orderType": "TakeProfit",
             "side": "Sell" if signal == 1 else "Buy",
@@ -189,15 +212,27 @@ class BybitTrader:
             "timeInForce": "GoodTillCancel",
             "reduceOnly": True,
             "closeOnTrigger": True,
+            "orderLinkId": oco_link_id,
         }
-        tp_resp = self.client.order.create(**tp_params)
-        if tp_resp["retCode"] != 0:
-            raise RuntimeError(f"Не удалось установить TakeProfit: {tp_resp['retMsg']}")
-        log.info("TakeProfit set at %.2f", tp_price)
 
-        log.info("Все ордера успешно размещены.")
+        # ------------------------------------------------------------------
+        # 7️⃣ Отправляем пакет
+        # ------------------------------------------------------------------
+        batch_resp = self.client.order.batchCreate(orders=[sl_order, tp_order])
+        if batch_resp["retCode"] != 0:
+            # Если пакет не прошёл, лучше отменить входящий ордер (см. выше)
+            raise RuntimeError(f"OCO batch error: {batch_resp['retMsg']}")
+        log.info("OCO placed – linkId=%s", oco_link_id)
+
+        # batchCreate возвращает список ордеров в поле "result"
+        oco_results = batch_resp["result"]
+
+        # Возврат удобной структуры
         return {
             "entry": entry_resp["result"],
-            "stoploss": sl_resp["result"],
-            "takeprofit": tp_resp["result"],
+            "oco": {
+                "linkId": oco_link_id,
+                "stopLoss": oco_results[0],
+                "takeProfit": oco_results[1],
+            },
         }
