@@ -167,12 +167,16 @@ def run_strategy(file):
             #         stoploss=sl_price,
             #         takeprofit=tp_price,
             #         percent_of_balance=percent,
-            #         order_type="Market",          # можно "Limit"
-            #         leverage=1,                  # при необходимости
+            #         order_type="Market",   # можно "Limit"
+            #         leverage=1,           # при необходимости
             #     )
-            #     print("Ордер выполнен:", res)
+            #     print("\n Операция выполнена")
+            #     print("Entry :", res["entry"])
+            #     print("OCO linkId :", res["oco"]["linkId"])
+            #     print("SL   :", res["oco"]["stopLoss"])
+            #     print("TP   :", res["oco"]["takeProfit"])
             # except Exception as e:
-            #     print("Ошибка:", e)
+            #     print("\n Ошибка:", e)
 
 
             
