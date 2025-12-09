@@ -11,6 +11,12 @@ import pytz
 import pandas as pd
 
 
+from trading_executor.trader import BybitTrader
+
+
+
+
+
 # ============================================================
 # 1. Конфигурация окружения
 # ============================================================
@@ -145,20 +151,28 @@ def run_strategy(file):
             print(f"[INFO] Сигнал добавлен: {signal_dict}")
 
 
-            ####################################
-            # Исполнение сделки на бирже
-            ####################################
-            # test_signal = {
-            #     "symbol": "BTCUSDT",
-            #     "signal": 1,
-            #     "entry_type": "limit",
-            #     "entry_price": 42900,
-            #     "stop_loss": 42500,
-            #     "take_profit": 44000,
-            #     "qty": 0.01
-            # }
+            # # ------------------- ПАРАМЕТРЫ ОТ СИГНАЛОВ -------------------
+            #     signal = 1                     # 1 – BUY, -1 – SELL
+            #     ticker = "BTCUSDT"
+            #     sl_price = 24000.0             # уровень стоп‑лосса
+            #     tp_price = 28000.0             # уровень тейк‑профита
+            #     percent = 5.0                  # 5 % от USDT‑баланса
             
-            # execute_signal(test_signal)
+            # trader = BybitTrader()
+            # # ------------------- ОТПРАВКА ОРДЕРА ------------------------
+            # try:
+            #     res = trader.execute_signal(
+            #         signal=signal,
+            #         symbol=ticker,
+            #         stoploss=sl_price,
+            #         takeprofit=tp_price,
+            #         percent_of_balance=percent,
+            #         order_type="Market",          # можно "Limit"
+            #         leverage=1,                  # при необходимости
+            #     )
+            #     print("Ордер выполнен:", res)
+            # except Exception as e:
+            #     print("Ошибка:", e)
 
 
             
