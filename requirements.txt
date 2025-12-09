@@ -5,3 +5,4 @@ SQLAlchemy==2.0.39
 pytz>=2023.3
 numpy==2.2.1
 TA-Lib==0.6.7
+pybybit==0.0.28
