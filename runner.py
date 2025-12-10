@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 import pytz
 import pandas as pd
 
-from trading_executor.trader import BybitTrader
+# from trading_executor.trader import BybitTrader
 
 # ============================================================
 # 1. Конфигурация окружения
