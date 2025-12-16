@@ -56,3 +56,15 @@ class TradeExecutor:
             "entry": entry,
             "sltp": sltp,
         }
+
+
+# Пример использования
+# executor = TradeExecutor(API_KEY, API_SECRET)
+
+# executor.open_market_position(
+#     symbol="BTCUSDT",
+#     side="Buy",
+#     qty=0.001,
+#     stop_loss=xxx,
+#     take_profit=yyy,
+# )
