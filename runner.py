@@ -95,13 +95,13 @@ def run_strategy(file):
         # берём последнюю строку
         # Текущее время в Московском часовом поясе
         moscow_tz = pytz.timezone('Europe/Moscow')
-        current_time = datetime.now()
+        current_time = datetime.now(moscow_tz)
 
         # Время последнего закрытого часа (предыдущий час)
-        last_closed_hour = current_time.replace(minute=0, second=0, microsecond=0, tzinfo=pytz.UTC) - timedelta(hours=1)
+        last_closed_hour = current_time.replace(minute=0, second=0, microsecond=0).astimezone(pytz.UTC) - timedelta(hours=1)
 
-        print(f"Текущее время: {current_time}")
-        print(f"Последний закрытый час: {last_closed_hour}")
+        print(f"Текущее время по МСК: {current_time}")
+        print(f"Последний закрытый час по UTC: {last_closed_hour}")
         
         # Ищем запись за последний закрытый час
         last_closed_row = signal_df[signal_df.index == last_closed_hour].iloc[-1]
