@@ -1,0 +1,12 @@
+# Cron jobs for trading bot
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# --- Задача получения данных от биржи (пополнение таблицы test.btc_usd_t) в 01 минуту каждого часа ---
+01 * * * * > /home/appuser/trading-bot/script_load_main.log && /home/appuser/trading-bot/run_load_main.sh >> /home/appuser/trading-bot/script_load_main.log 2>&1
+
+# --- Основная задача: запуск проверки наличия сигнала в 03 минуты каждого часа  ---
+03 * * * * > /home/appuser/trading-bot/script.log && /home/appuser/trading-bot/run_trading_bot.sh >> /home/appuser/trading-bot/script.log 2>&1
+
+# --- Задача запуска расчета статистики по всем торговым стратегиям за все время ---
+10 12 * * 5 > /home/appuser/trading-bot/script_stat.log && /home/appuser/trading-bot/run_strategy_stat.sh >> /home/appuser/trading-bot/script_stat.log 2>&1
