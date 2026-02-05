@@ -60,210 +60,6 @@ def fetch_market_data(tbl:str) -> pd.DataFrame:
 
 
 
-# def backtest_strategy(
-#     df: pd.DataFrame,
-#     stop_loss_pct: float,
-#     take_profit_pct: float,
-#     initial_balance: float = 10000.0,
-#     trade_size: float = 1.0
-# ) -> dict:
-#     """
-#     Бэктест стратегии с возвратом метрик:
-#     - total_return
-#     - win_rate
-#     - total_trades
-#     - avg_trade
-#     - sharpe_ratio
-#     - trades_df
-#     """
-
-#     df = df.copy()
-
-#     # Список сделок
-#     trades = []
-
-#     current_position = 0          # -1, 0, 1
-#     entry_price = None
-#     stop_loss_price = None
-#     take_profit_price = None
-
-#     for i in range(1, len(df)):
-#         signal = df['signal'].iloc[i]
-#         o = df['open'].iloc[i]
-#         h = df['high'].iloc[i]
-#         l = df['low'].iloc[i]
-#         c = df['close'].iloc[i]
-
-#         # ---------- ЕСЛИ ЕСТЬ ОТКРЫТАЯ ПОЗИЦИЯ ----------
-#         if current_position != 0:
-
-#             # LONG
-#             if current_position == 1:
-#                 # SL
-#                 if l <= stop_loss_price:
-#                     exit_price = stop_loss_price
-#                     pnl = (exit_price - entry_price) / entry_price * 100 * trade_size
-
-#                     trades.append({
-#                         'entry_price': entry_price,
-#                         'exit_price': exit_price,
-#                         'signal': 1,
-#                         'pnl_pct': pnl,
-#                         'stop_loss': True,
-#                         'take_profit': False
-#                     })
-
-#                     current_position = 0
-#                     entry_price = None
-#                     continue  # к следующей свечке
-
-#                 # TP
-#                 elif h >= take_profit_price:
-#                     exit_price = take_profit_price
-#                     pnl = (exit_price - entry_price) / entry_price * 100 * trade_size
-
-#                     trades.append({
-#                         'entry_price': entry_price,
-#                         'exit_price': exit_price,
-#                         'signal': 1,
-#                         'pnl_pct': pnl,
-#                         'stop_loss': False,
-#                         'take_profit': True
-#                     })
-
-#                     current_position = 0
-#                     entry_price = None
-#                     continue
-
-#             # SHORT
-#             elif current_position == -1:
-#                 # SL
-#                 if h >= stop_loss_price:
-#                     exit_price = stop_loss_price
-#                     pnl = (entry_price - exit_price) / entry_price * 100 * trade_size
-
-#                     trades.append({
-#                         'entry_price': entry_price,
-#                         'exit_price': exit_price,
-#                         'signal': -1,
-#                         'pnl_pct': pnl,
-#                         'stop_loss': True,
-#                         'take_profit': False
-#                     })
-
-#                     current_position = 0
-#                     entry_price = None
-#                     continue
-
-#                 # TP
-#                 elif l <= take_profit_price:
-#                     exit_price = take_profit_price
-#                     pnl = (entry_price - exit_price) / entry_price * 100 * trade_size
-
-#                     trades.append({
-#                         'entry_price': entry_price,
-#                         'exit_price': exit_price,
-#                         'signal': -1,
-#                         'pnl_pct': pnl,
-#                         'stop_loss': False,
-#                         'take_profit': True
-#                     })
-
-#                     current_position = 0
-#                     entry_price = None
-#                     continue
-
-#             # Если приходит противоположный сигнал — закрываем и переворачиваемся
-#             if signal != 0 and signal != current_position:
-#                 exit_price = c
-
-#                 if current_position == 1:
-#                     pnl = (exit_price - entry_price) / entry_price * 100 * trade_size
-#                 else:
-#                     pnl = (entry_price - exit_price) / entry_price * 100 * trade_size
-
-#                 trades.append({
-#                     'entry_price': entry_price,
-#                     'exit_price': exit_price,
-#                     'signal': current_position,
-#                     'pnl_pct': pnl,
-#                     'stop_loss': False,
-#                     'take_profit': False
-#                 })
-
-#                 # Открываем новую позицию
-#                 current_position = signal
-#                 entry_price = o
-
-#                 if current_position == 1:
-#                     stop_loss_price = entry_price * (1 - stop_loss_pct / 100)
-#                     take_profit_price = entry_price * (1 + take_profit_pct / 100)
-#                 else:
-#                     stop_loss_price = entry_price * (1 + stop_loss_pct / 100)
-#                     take_profit_price = entry_price * (1 - take_profit_pct / 100)
-
-#                 continue
-
-#         # ---------- ОТКРЫТИЕ НОВОЙ ПОЗИЦИИ ----------
-#         if current_position == 0 and signal != 0:
-#             current_position = signal
-#             entry_price = o
-
-#             if signal == 1:
-#                 stop_loss_price = entry_price * (1 - stop_loss_pct / 100)
-#                 take_profit_price = entry_price * (1 + take_profit_pct / 100)
-#             else:
-#                 stop_loss_price = entry_price * (1 + stop_loss_pct / 100)
-#                 take_profit_price = entry_price * (1 - take_profit_pct / 100)
-
-#     # ---------- ЗАКРЫВАЕМ ПОСЛЕДНЮЮ ПОЗИЦИЮ ----------
-#     if current_position != 0:
-#         last_price = df.iloc[-1]['close']
-
-#         if current_position == 1:
-#             pnl = (last_price - entry_price) / entry_price * 100 * trade_size
-#         else:
-#             pnl = (entry_price - last_price) / entry_price * 100 * trade_size
-
-#         trades.append({
-#             'entry_price': entry_price,
-#             'exit_price': last_price,
-#             'signal': current_position,
-#             'pnl_pct': pnl,
-#             'stop_loss': False,
-#             'take_profit': False
-#         })
-
-#     # ---------- РАСЧЁТ МЕТРИК ----------
-#     if len(trades) == 0:
-#         return {
-#             'total_return': 0,
-#             'win_rate': 0,
-#             'total_trades': 0,
-#             'avg_trade': 0,
-#             'sharpe_ratio': 0,
-#             'trades': pd.DataFrame()
-#         }
-
-#     trades_df = pd.DataFrame(trades)
-
-#     total_return = trades_df['pnl_pct'].sum()
-#     win_rate = (trades_df['pnl_pct'] > 0).mean() * 100
-#     avg_trade = trades_df['pnl_pct'].mean()
-#     std = trades_df['pnl_pct'].std()
-#     sharpe = avg_trade / std if std != 0 else 0
-
-#     return {
-#         'total_return': total_return,
-#         'win_rate': win_rate,
-#         'total_trades': len(trades_df),
-#         'avg_trade': avg_trade,
-#         'sharpe_ratio': sharpe
-#         # 'trades': trades_df
-#     }
-
-
-
 def backtest_strategy(
     df: pd.DataFrame,
     stop_loss_pct: float,
@@ -513,7 +309,7 @@ def backtest_strategy(
 strategies = {
         "close_open_1pct": {"sl": 0.01,  "tp": 0.025},
         "close_open_engulfing": {"sl": 0.01,  "tp": 0.02},
-        "macd": {"sl": 0.01,  "tp": 0.025},
+        "candles": {"sl": 0.01,  "tp": 0.02},
     }
 
 
@@ -537,9 +333,7 @@ def run_strategy_tester(file):
     
     result = backtest_strategy(
             df=signal_df,
-            # stop_loss_pct=0.5,   # 0.5% стоп-лосс
             stop_loss_pct=strategies[strategy_nm]['sl'] * 100,   # 0.5% стоп-лосс
-            # take_profit_pct=1.5, # 1.5% тейк-профит
             take_profit_pct=strategies[strategy_nm]['tp'] * 100, # 1.5% тейк-профит
             initial_balance=10000.0,
             trade_size=0.5       # 50% капитала на сделку
@@ -573,10 +367,6 @@ def run_strategy_tester(file):
                          ,tg_chat_id = TELEGRAM_CHAT_ID 
                          ,message = msg
                          ,parse_mode="Markdown")
-
-
-
-
 
 engine = create_engine(
     f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:5432/{DB_NAME}"
