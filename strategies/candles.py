@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def trading_strategy(df: pd.DataFrame, 
                                    use_volume: bool = True,
