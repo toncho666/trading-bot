@@ -309,7 +309,7 @@ def backtest_strategy(
 strategies = {
         "close_open_1pct": {"sl": 0.01,  "tp": 0.025},
         "close_open_engulfing": {"sl": 0.01,  "tp": 0.02},
-        "candles": {"sl": 0.01,  "tp": 0.02},
+        "candles": {"sl": 0.01,  "tp": 0.05},
     }
 
 
