@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 def trading_strategy(df: pd.DataFrame, 
-                                   use_volume: bool = True,
+                                   use_volume: bool = False,
                                    min_body_ratio: float = 2.0) -> pd.DataFrame:
     """
     Рассчитывает торговые сигналы на основе свечных паттернов.
