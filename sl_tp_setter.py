@@ -47,7 +47,7 @@ def get_sl_tp_val(strategy_name: str
         "close_open_1pct": {"sl": 0.006,  "tp": 0.035},
         "close_open_engulfing": {"sl": 0.011,  "tp": 0.035},
         # "macd": {"sl": 0.01,  "tp": 0.025},
-        "candles": {"sl": 0.01,  "tp": 0.05},
+        "candles": {"sl": 0.008,  "tp": 0.04},
         # ← здесь можно добавить новые стратегии
     }
 
