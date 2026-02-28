@@ -2,6 +2,9 @@ import pandas as pd
 
 def trading_strategy(df: pd.DataFrame) -> pd.DataFrame:
     """
+    change_perc = 0.6
+    stop_loss = 1.1
+    take_profit = 3.5
     Vectorized trading strategy:
     - Sell: previous close > previous open * 1.005 AND current close < current open
     - Buy:  previous open > previous close * 1.005 AND current close > current open
@@ -17,8 +20,8 @@ def trading_strategy(df: pd.DataFrame) -> pd.DataFrame:
     curr_open  = df['open']
 
     # Conditions
-    sell_cond = (prev_close > prev_open * 1.005) & (curr_close < curr_open)
-    buy_cond  = (prev_open  > prev_close * 1.005) & (curr_close > curr_open)
+    sell_cond = (prev_close > prev_open * 1.006) & (curr_close < curr_open)
+    buy_cond  = (prev_open  > prev_close * 1.006) & (curr_close > curr_open)
 
     # Initialize signal column
     df['signal'] = 0
