@@ -5,6 +5,8 @@ def trading_strategy(df: pd.DataFrame,
                                    use_volume: bool = False,
                                    min_body_ratio: float = 2.0) -> pd.DataFrame:
     """
+    stop_loss = 0.8
+    take_profit = 4.0
     Рассчитывает торговые сигналы на основе свечных паттернов.
     
     Параметры:
