@@ -311,6 +311,7 @@ strategies = {
         "close_open_engulfing": {"sl": 0.011,  "tp": 0.035},
         "macd_hist": {"sl": 0.008,  "tp": 0.035},
         "candles": {"sl": 0.008,  "tp": 0.04},
+        "fractal": {"sl": 0.068,  "tp": 0.05},
     }
 
 
