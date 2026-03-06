@@ -68,7 +68,7 @@ def backtest_strategy(
     trade_size: float = 1.0,
     commission_pct: float = 0.1,
     slippage_pct: float = 0.005,
-) -> Dict:
+):
     """
     Исправленная версия бэктеста с корректной обработкой стопов и сигналов.
     """
