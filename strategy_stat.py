@@ -6,6 +6,7 @@ from sqlalchemy import create_engine, text
 from datetime import datetime, timedelta
 import pytz
 import pandas as pd
+import numpy as np
 import re
 from tg_notification import send_telegram_message
 
