@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Instagram‑отчёт {{ report_date }}</title>
+    <style>
+        @font-face {
+            font-family: "SF Pro";
+            src: local(".SF NS Text"),
+                 local("Helvetica Neue"),
+                 local("Arial");
+        }
+        body {font-family:"SF Pro",sans-serif; margin:0; padding:0; background:#fafafa; color:#111;}
+        .container {max-width:960px; margin:auto; background:#fff; padding:32px 48px; box-shadow:0 4px 12px rgba(0,0,0,0.06);}
+        .header {display:flex; align-items:center; border-bottom:1px solid #e5e5ea; padding-bottom:12px; margin-bottom:24px;}
+        .header img {height:28px; margin-right:16px;}
+        .header h1 {font-size:22px; font-weight:600; margin:0;}
+        .kpi {display:flex; gap:16px; margin-bottom:28px;}
+        .kpi .card {
+            flex:1; background:#f9f9fb; border-radius:12px; padding:20px;
+            text-align:center; box-shadow:0 1px 3px rgba(0,0,0,0.06);
+        }
+        .kpi .card h2 {margin:0; font-size:24px; font-weight:600; color:#111;}
+        .kpi .card p {margin:6px 0 0; font-size:13px; color:#555;}
+        .section {margin-bottom:36px;}
+        .section h2 {
+            font-size:18px; font-weight:600; margin:0 0 12px;
+            color:#111; border-bottom:1px solid #e5e5ea; padding-bottom:4px;
+        }
+        .chart {text-align:center; margin:12px 0;}
+        .chart img {max-width:100%; border-radius:8px; box-shadow:0 3px 6px rgba(0,0,0,0.08);}
+        table {width:100%; border-collapse:collapse; font-size:13px;}
+        th, td {border-bottom:1px solid #e5e5ea; padding:8px 4px; text-align:center;}
+        th {font-weight:600; background:#f5f5f7; color:#111;}
+        tbody tr:hover {background:#f2f2f5;}
+        .profile-card {
+            display:inline-block; width:30%; min-width:140px; margin:8px;
+            background:#f9f9fb; border-radius:12px; padding:12px; text-align:center;
+        }
+        .profile-card img {width:64px; height:64px; border-radius:50%; object-fit:cover; margin-bottom:6px;}
+        .profile-card .name {font-weight:600; font-size:14px; color:#111;}
+        .profile-card .sub {font-size:12px; color:#555;}
+        .footer {
+            border-top:1px solid #e5e5ea; font-size:11px; color:#555;
+            display:flex; justify-content:space-between; align-items:center;
+            padding-top:12px; margin-top:24px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        {% if logo_path is defined and logo_path %}
+            <img src="data:image/png;base64,{{ logo_path }}" alt="logo">
+        {% endif %}
+        <h1>Instagram‑отчёт за {{ report_date }}</h1>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi">
+        <div class="card"><h2>{{ kpi.followers_change|round(2) }} %</h2><p>Рост подписчиков</p></div>
+        <div class="card"><h2>{{ kpi.total_likes|intcomma }}</h2><p>Лайки (всего)</p></div>
+        <div class="card"><h2>{{ kpi.avg_engagement|round(2) }} %</h2><p>Средний Engagement</p></div>
+        <div class="card"><h2>{{ kpi.video_completion|round(2) }} %</h2><p>Video Completion</p></div>
+    </div>
+
+    <!-- Тренды (графики) -->
+    <div class="section">
+        <h2>Тренды</h2>
+        <div class="chart"><img src="data:image/png;base64,{{ chart_followers }}" alt="Followers trend"></div>
+        <div class="chart"><img src="data:image/png;base64,{{ chart_engagement }}" alt="Engagement trend"></div>
+        <div class="chart"><img src="data:image/png;base64,{{ chart_video }}" alt="Video completion"></div>
+    </div>
+
+    <!-- Топ‑10 постов -->
+    <div class="section">
+        <h2>Топ‑10 постов по Engagement</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th><th>Превью</th><th>URL</th><th>Тип</th>
+                    <th>Лайки / Комм.</th><th>ER %</th><th>Play / View</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for row in top_posts %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{% if row.preview %}<img src="{{ row.preview }}" width="40">{% endif %}</td>
+                    <td><a href="{{ row.post_url }}">{{ row.post_url|truncate(30,true) }}</a></td>
+                    <td>{{ row.post_type }}</td>
+                    <td>{{ row.likes_cnt|intcomma }} / {{ row.comments_cnt|intcomma }}</td>
+                    <td>{{ row.engagement_rate|round(2) }}</td>
+                    <td>{% if row.post_type == 'Video' %}{{ row.video_play_cnt|intcomma }} / {{ row.video_view_cnt|intcomma }}{% else %}-{% endif %}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Инфлюенсеры -->
+    <div class="section">
+        <h2>Топ‑инфлюенсеры</h2>
+        {% for p in top_profiles %}
+        <div class="profile-card">
+            {% if p.avatar %}<img src="{{ p.avatar }}" alt="avatar">{% endif %}
+            <div class="name">@{{ p.username }}</div>
+            <div class="sub">{{ p.followers_cnt|intcomma }} подп.</div>
+            <div class="sub">{% if p.verified %}✅{% else %}❌{% endif %} verified</div>
+            <div class="sub">ER {{ p.avg_engagement|round(2) }} %</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <div>Сформировано: {{ generation_time }}</div>
+        <div>Последний парсинг: {{ latest_load }}</div>
+        <div>support@dom.rf</div>
+    </div>
+
+</div>
+</body>
+</html>
