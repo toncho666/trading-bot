@@ -1,0 +1,7 @@
+Flask
+SQLAlchemy
+psycopg2-binary
+pandas
+matplotlib
+seaborn
+Pillow
