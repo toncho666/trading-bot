@@ -6,7 +6,7 @@ import os
 import importlib.util
 import psycopg2
 from sqlalchemy import create_engine, text
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import pytz
 import pandas as pd
 
@@ -141,7 +141,7 @@ def run_strategy(file):
                     signal_dict["close_price"],
                     signal_dict["stop_loss"],
                     signal_dict["take_profit"],
-                    datetime.utcnow()
+                    datetime.now(timezone.utc)
                 )
             )
             conn.commit()
