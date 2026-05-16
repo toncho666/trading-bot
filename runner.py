@@ -110,6 +110,9 @@ def run_strategy(file):
         # Проверяем наличие сигнала
         if last_closed_row["signal"] in ["1", 1, "-1", -1]:
             print('Сигнал присутствует')
+            
+            sl, tp = get_sl_tp_val(strategy_name,signal_dict["side"].lower(),signal_dict['close_price'])
+            
             signal_dict = {
                 "symbol": SYMBOL,
                 "timestamp": last_closed_hour,
@@ -118,12 +121,14 @@ def run_strategy(file):
                 "volume": 10,
                 "open_price": float(last_closed_row["open"]),
                 "close_price": float(last_closed_row["close"]),
+                "stop_loss": float(sl),
+                "take_profit": float(tp)
             }
 
             cur.execute(
                 """
-                INSERT INTO test.signals (strategy_name, symbol, timestamp, timeframe, side, volume, open_price, close_price, created_at)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                INSERT INTO test.signals (strategy_name, symbol, timestamp, timeframe, side, volume, open_price, close_price, stop_loss, take_profit, created_at)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 """,
                 (
                     os.path.basename(file),
@@ -134,6 +139,8 @@ def run_strategy(file):
                     signal_dict["volume"],
                     signal_dict["open_price"],
                     signal_dict["close_price"],
+                    signal_dict["stop_loss"],
+                    signal_dict["take_profit"],
                     datetime.utcnow()
                 )
             )
@@ -175,7 +182,6 @@ def run_strategy(file):
             strategy_name = os.path.basename(file).replace(".py", "")
             
             # отправляем уведомление в Telegram
-            sl, tp = get_sl_tp_val(strategy_name,signal_dict["side"].lower(),signal_dict['close_price'])
             
             msg = (
                 f"🚀 *НОВЫЙ СИГНАЛ!*\n\n"
