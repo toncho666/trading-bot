@@ -14,6 +14,7 @@ from tg_notification import send_telegram_message
 # 1. Конфигурация окружения
 # ============================================================
 DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
@@ -28,7 +29,7 @@ TABLE_MD = "test.btc_usd_t"   # таблица с рыночными данны�
 # 2. Подключение к БД Postgres
 # ============================================================
 # engine = create_engine(
-#     f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:5432/{DB_NAME}"
+#     f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 # )
 
 # conn = psycopg2.connect(
@@ -36,7 +37,7 @@ TABLE_MD = "test.btc_usd_t"   # таблица с рыночными данны�
 #     user=DB_USER,
 #     password=DB_PASS,
 #     host=DB_HOST,
-#     port=5432
+#     port=DB_PORT
 # )
 # conn.autocommit = True
 # cur = conn.cursor()
@@ -379,7 +380,7 @@ def run_strategy_tester(file):
                          ,parse_mode="Markdown")
 
 engine = create_engine(
-    f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:5432/{DB_NAME}"
+    f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 )
 
 conn = psycopg2.connect(
@@ -387,7 +388,7 @@ conn = psycopg2.connect(
     user=DB_USER,
     password=DB_PASS,
     host=DB_HOST,
-    port=5432
+    port=DB_PORT
 )
 conn.autocommit = True
 cur = conn.cursor()
