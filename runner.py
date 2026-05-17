@@ -111,8 +111,6 @@ def run_strategy(file):
         if last_closed_row["signal"] in ["1", 1, "-1", -1]:
             print('Сигнал присутствует')
             
-            sl, tp = get_sl_tp_val(strategy_name,signal_dict["side"].lower(),signal_dict['close_price'])
-            
             signal_dict = {
                 "symbol": SYMBOL,
                 "timestamp": last_closed_hour,
@@ -120,10 +118,16 @@ def run_strategy(file):
                 "side": "buy" if last_closed_row["signal"] in ["1", 1] else "sell" if last_closed_row["signal"] in ["-1", -1] else None,
                 "volume": 10,
                 "open_price": float(last_closed_row["open"]),
-                "close_price": float(last_closed_row["close"]),
+                "close_price": float(last_closed_row["close"])
+            }
+
+            sl, tp = get_sl_tp_val(strategy_name,signal_dict["side"].lower(),signal_dict['close_price'])
+
+            signal_dict.update({
                 "stop_loss": float(sl),
                 "take_profit": float(tp)
-            }
+            })
+
 
             cur.execute(
                 """
