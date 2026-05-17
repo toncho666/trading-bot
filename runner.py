@@ -141,7 +141,7 @@ def run_strategy(file):
                     signal_dict["close_price"],
                     signal_dict["stop_loss"],
                     signal_dict["take_profit"],
-                    datetime.now(timezone.utc)
+                    datetime.now()
                 )
             )
             conn.commit()
