@@ -310,8 +310,8 @@ def backtest_strategy(
         "sharpe_ratio": round(sharpe, 2),
         "max_drawdown": round(max_drawdown, 2),
         "profit_factor": round(profit_factor, 2) if profit_factor != np.inf else float('inf'),
-        "trades_df": trades_df,
-        "equity_curve": equity_series,
+        # "trades_df": trades_df,
+        # "equity_curve": equity_series,
     }
 
 
