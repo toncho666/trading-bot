@@ -310,8 +310,8 @@ def backtest_strategy(
         "sharpe_ratio": round(sharpe, 2),
         "max_drawdown": round(max_drawdown, 2),
         "profit_factor": round(profit_factor, 2) if profit_factor != np.inf else float('inf'),
-        # "trades_df": trades_df,
-        # "equity_curve": equity_series,
+        "trades_df": trades_df,
+        "equity_curve": equity_series,
     }
 
 
@@ -349,13 +349,6 @@ def run_strategy_tester(file):
             initial_balance=10000.0,
             trade_size=0.5       # 50% капитала на сделку
         )
-
-    print(f'----------------{strategy_nm}-----------------')
-    print('result')
-    print(result)
-    for key in result:
-        print(f'{key}: {result[key]} ')
-    print(f'----------------strategy {strategy} end-----------------')
 
     start_date = signal_df.index.min()
     end_date = signal_df.index.max()
