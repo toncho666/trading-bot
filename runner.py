@@ -1,7 +1,7 @@
 from hist_data import fetch_data
 from tg_notification import send_telegram_message
 from sl_tp_setter import get_sl_tp_val
-from strategy_stat import backtest_strategy
+from backtest import backtest_strategy
 import os
 import importlib.util
 import psycopg2
