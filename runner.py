@@ -1,7 +1,7 @@
 from hist_data import fetch_data
 from tg_notification import send_telegram_message
 from sl_tp_setter import get_sl_tp_val
-
+from strategy_stat import backtest_strategy
 import os
 import importlib.util
 import psycopg2
@@ -9,8 +9,11 @@ from sqlalchemy import create_engine, text
 from datetime import datetime, timedelta, timezone
 import pytz
 import pandas as pd
-
+import numpy as np
+import re
 # from trading_executor.trader import BybitTrader
+
+
 
 # ============================================================
 # 1. Конфигурация окружения
@@ -48,7 +51,7 @@ cur = conn.cursor()
 # ============================================================
 # 3. Получение последних данных OHLCV из БД
 # ============================================================
-def fetch_market_data(symbol: str, timeframe: str) -> pd.DataFrame:
+def fetch_market_data(symbol: str) -> pd.DataFrame:
     query = text(f"""
         SELECT *
         FROM {TABLE_MD}
@@ -70,10 +73,7 @@ def run_strategy(file):
     spec.loader.exec_module(strategy)
 
     # Загружаем данные от биржи ToDO - переписать чтобы забирали данные из БД по любому таймфрейму
-    data = fetch_market_data(SYMBOL, TIMEFRAME)
-
-    print('data is:')
-    print(data)
+    data = fetch_market_data(SYMBOL)
 
     # Стратегия возвращает DataFrame с сигналами по стратегии
     signal_df = strategy.trading_strategy(data)
@@ -86,12 +86,38 @@ def run_strategy(file):
         strategy_name = os.path.splitext(os.path.basename(file))[0]
         table_name = f"signal_df_{strategy_name}"
 
-        signal_df.to_sql(name=table_name
-                        ,schema='test'
-                        ,con=engine
-                        ,if_exists="replace"
-                        ,index=True)
+        signal_df.to_sql(
+             name=table_name
+            ,schema='test'
+            ,con=engine
+            ,if_exists="replace"
+            ,index=True)
         print(f"DataFrame сохранён в таблицу {table_name}")
+
+        
+        strategies = {
+                "close_open_1pct": {"sl": 0.006,  "tp": 0.035},
+                "close_open_engulfing": {"sl": 0.011,  "tp": 0.035},
+                "macd_hist": {"sl": 0.008,  "tp": 0.035},
+                "candles": {"sl": 0.008,  "tp": 0.04},
+                "fractal": {"sl": 0.004,  "tp": 0.05},
+            }
+
+        result = backtest_strategy(
+                df=signal_df,
+                stop_loss_pct=strategies[strategy_name]['sl'] * 100,   # 0.5% стоп-лосс
+                take_profit_pct=strategies[strategy_name]['tp'] * 100, # 1.5% тейк-профит
+                initial_balance=10000.0,
+                trade_size=0.5       # 50% капитала на сделку
+            )
+        # Отправляем DataFrame в PostgreSQL
+        result['trades_df'].to_sql(
+             name=f"{strategy_name}_trades"   # имя таблицы (будет создана автоматически)
+            ,con=engine       
+            ,if_exists='replace'
+            ,index=True
+        )
+        print(f"trades_df сохранён в таблицу {strategy_name}_trades")
         
         # берём последнюю строку
         # Текущее время в Московском часовом поясе
@@ -211,10 +237,14 @@ def run_strategy(file):
     else:
         print('Пустой результат от стратегии')
 
+
 # Запуск всех стратегий
-for f in os.listdir(STRATEGIES_FOLDER):
-    if f.endswith(".py"):
-        run_strategy(os.path.join(STRATEGIES_FOLDER, f))
+for func in os.listdir(STRATEGIES_FOLDER):
+    if func.endswith(".py"):
+        # strategy_name = func.replace('.py', '')
+        run_strategy(os.path.join(STRATEGIES_FOLDER, func))
+
+
 
 cur.close()
 conn.close()
