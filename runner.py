@@ -113,6 +113,7 @@ def run_strategy(file):
         # Отправляем DataFrame в PostgreSQL
         result['trades_df'].to_sql(
              name=f"{strategy_name}_trades"   # имя таблицы (будет создана автоматически)
+            ,schema='test'
             ,con=engine       
             ,if_exists='replace'
             ,index=True
