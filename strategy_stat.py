@@ -62,7 +62,7 @@ def fetch_market_data(tbl:str) -> pd.DataFrame:
 
 
 
-def backtest_strategy(
+def strategy_backtest(
     df: pd.DataFrame,
     stop_loss_pct: float,
     take_profit_pct: float,
@@ -342,7 +342,7 @@ def run_strategy_tester(file):
     
     strategy_nm = os.path.basename(file).replace(".py", "")
     
-    result = backtest_strategy(
+    result = strategy_backtest(
             df=signal_df,
             stop_loss_pct=strategies[strategy_nm]['sl'] * 100,   # 0.5% стоп-лосс
             take_profit_pct=strategies[strategy_nm]['tp'] * 100, # 1.5% тейк-профит
