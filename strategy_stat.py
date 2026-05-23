@@ -366,7 +366,6 @@ def run_strategy_tester(file):
         f"⚖️ *Коэффициент Шарпа:* `{result['sharpe_ratio']:.3f}`\n\n"
         f"🕒 Отчёт сформирован: {end_date.strftime('%Y-%m-%d %H:%M:%S UTC')}"
     )
-
     send_telegram_message(tg_token = TELEGRAM_TOKEN
                          ,tg_chat_id = TELEGRAM_CHAT_ID 
                          ,message = msg
