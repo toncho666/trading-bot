@@ -88,7 +88,6 @@ def backtest_strategy(
     df = df.copy().reset_index(drop=True)
     
     # Добавляем колонки для отслеживания
-    df['strategy_nm'] = strategy_name
     df['position'] = 0
     df['entry_price'] = np.nan
     df['stop_price'] = np.nan
