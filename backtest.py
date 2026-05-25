@@ -8,7 +8,6 @@ import pytz
 import pandas as pd
 import numpy as np
 import re
-from typing import str
 
 # ============================================================
 # 1. Конфигурация окружения
