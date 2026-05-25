@@ -109,6 +109,9 @@ def backtest_strategy(
         l = df.at[i, "low"]
         c = df.at[i, "close"]
         
+        dt = df.at[i, "timestamp"]
+        strategy_nm = strategy_name
+        
         # Сигнал с предыдущего бара (исполняем на открытии текущего)
         # Берем сигнал с предыдущей строки, если есть
         if i > 0:
@@ -151,7 +154,8 @@ def backtest_strategy(
             if exit_reason:
                 pnl = calc_pnl_fixed(entry_price_val, exit_price, current_position)
                 trades.append({
-                    "": ,
+                    "strategy_nm": strategy_nm,
+                    "dt": dt,
                     "entry_idx": entry_idx,
                     "exit_idx": i,
                     "entry_price": entry_price_val,
@@ -176,7 +180,8 @@ def backtest_strategy(
             
             pnl = calc_pnl_fixed(entry_price_val, exit_price, current_position)
             trades.append({
-                "": ,
+                "strategy_nm": strategy_nm,
+                "dt": dt,
                 "entry_idx": entry_idx,
                 "exit_idx": i,
                 "entry_price": entry_price_val,
@@ -221,7 +226,8 @@ def backtest_strategy(
         last_price = df.iloc[-1]["close"]
         pnl = calc_pnl_fixed(entry_price_val, last_price, current_position)
         trades.append({
-            "": ,
+            "strategy_nm": strategy_nm,
+            "dt": dt,
             "entry_idx": entry_idx,
             "exit_idx": len(df) - 1,
             "entry_price": entry_price_val,
@@ -235,7 +241,8 @@ def backtest_strategy(
     # ========== РАСЧЕТ МЕТРИК ==========
     if not trades:
         return {
-            "": ,
+            "strategy_nm": strategy_nm,
+            "dt": 0,
             "total_return": 0.0,
             "win_rate": 0.0,
             "total_trades": 0,
