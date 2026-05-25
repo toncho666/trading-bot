@@ -47,6 +47,7 @@ def backtest_strategy(
     trade_size: float = 1.0,
     commission_pct: float = 0.1,
     slippage_pct: float = 0.005,
+    strategy_name: string
 ):
     """
     Исправленная версия бэктеста с корректной обработкой стопов и сигналов.
@@ -87,6 +88,7 @@ def backtest_strategy(
     df = df.copy().reset_index(drop=True)
     
     # Добавляем колонки для отслеживания
+    df['strategy_nm'] = strategy_name
     df['position'] = 0
     df['entry_price'] = np.nan
     df['stop_price'] = np.nan
@@ -149,6 +151,7 @@ def backtest_strategy(
             if exit_reason:
                 pnl = calc_pnl_fixed(entry_price_val, exit_price, current_position)
                 trades.append({
+                    "": ,
                     "entry_idx": entry_idx,
                     "exit_idx": i,
                     "entry_price": entry_price_val,
@@ -173,6 +176,7 @@ def backtest_strategy(
             
             pnl = calc_pnl_fixed(entry_price_val, exit_price, current_position)
             trades.append({
+                "": ,
                 "entry_idx": entry_idx,
                 "exit_idx": i,
                 "entry_price": entry_price_val,
@@ -217,6 +221,7 @@ def backtest_strategy(
         last_price = df.iloc[-1]["close"]
         pnl = calc_pnl_fixed(entry_price_val, last_price, current_position)
         trades.append({
+            "": ,
             "entry_idx": entry_idx,
             "exit_idx": len(df) - 1,
             "entry_price": entry_price_val,
@@ -230,6 +235,7 @@ def backtest_strategy(
     # ========== РАСЧЕТ МЕТРИК ==========
     if not trades:
         return {
+            "": ,
             "total_return": 0.0,
             "win_rate": 0.0,
             "total_trades": 0,
