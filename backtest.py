@@ -41,14 +41,15 @@ def fetch_market_data(tbl:str) -> pd.DataFrame:
 
 
 def backtest_strategy(
+    
+    strategy_name: str,
     df: pd.DataFrame,
     stop_loss_pct: float,
     take_profit_pct: float,
     initial_balance: float = 10000.0,
     trade_size: float = 1.0,
     commission_pct: float = 0.1,
-    slippage_pct: float = 0.005,
-    strategy_name: str
+    slippage_pct: float = 0.005
 ):
     """
     Исправленная версия бэктеста с корректной обработкой стопов и сигналов.
