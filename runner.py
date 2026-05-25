@@ -108,7 +108,8 @@ def run_strategy(file):
                 stop_loss_pct=strategies[strategy_name]['sl'] * 100,   # 0.5% стоп-лосс
                 take_profit_pct=strategies[strategy_name]['tp'] * 100, # 1.5% тейк-профит
                 initial_balance=10000.0,
-                trade_size=0.5       # 50% капитала на сделку
+                trade_size=0.5,       # 50% капитала на сделку
+                strategy_name = strategy_name # наименование стратегии
             )
         # Отправляем DataFrame в PostgreSQL
         result['trades_df'].to_sql(
