@@ -86,6 +86,8 @@ def backtest_strategy(
         return pnl_pct
     
     # Подготовка данных
+    df = df.copy()#.reset_index(drop=True)
+    df['timestamp'] = df.index
     df = df.copy().reset_index(drop=True)
     
     # Добавляем колонки для отслеживания
