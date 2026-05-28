@@ -112,6 +112,7 @@ def backtest_strategy(
         c = df.at[i, "close"]
         
         dt = df.at[i, "timestamp"]
+        symbol = df.at[i, "symbol"]
         strategy_nm = strategy_name
         
         # Сигнал с предыдущего бара (исполняем на открытии текущего)
@@ -157,6 +158,7 @@ def backtest_strategy(
                 pnl = calc_pnl_fixed(entry_price_val, exit_price, current_position)
                 trades.append({
                     "strategy_nm": strategy_nm,
+                    "symbol": symbol,
                     "dt": dt,
                     "entry_idx": entry_idx,
                     "exit_idx": i,
@@ -183,6 +185,7 @@ def backtest_strategy(
             pnl = calc_pnl_fixed(entry_price_val, exit_price, current_position)
             trades.append({
                 "strategy_nm": strategy_nm,
+                "symbol": symbol,
                 "dt": dt,
                 "entry_idx": entry_idx,
                 "exit_idx": i,
@@ -229,6 +232,7 @@ def backtest_strategy(
         pnl = calc_pnl_fixed(entry_price_val, last_price, current_position)
         trades.append({
             "strategy_nm": strategy_nm,
+            "symbol": symbol,
             "dt": dt,
             "entry_idx": entry_idx,
             "exit_idx": len(df) - 1,
@@ -244,6 +248,7 @@ def backtest_strategy(
     if not trades:
         return {
             "strategy_nm": strategy_nm,
+            "symbol": symbol,
             "dt": 0,
             "total_return": 0.0,
             "win_rate": 0.0,
