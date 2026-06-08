@@ -11,6 +11,7 @@ import pytz
 import pandas as pd
 import numpy as np
 import re
+from aggregate_daily_stats import aggregate_daily_stats
 # from trading_executor.trader import BybitTrader
 
 
@@ -120,6 +121,27 @@ def run_strategy(file):
             ,index=True
         )
         print(f"trades_df сохранён в таблицу {strategy_name}_trades")
+
+        
+        # Агрегируем дневную статистику
+        daily_stats_df = aggregate_daily_stats(
+            trades_df=result['trades_df'],
+            strategy_name=strategy_name,
+            initial_balance=10000.0
+        )
+        
+        # 5. Сохраняем в PostgreSQL
+        if not daily_stats_df.empty:
+            daily_stats_df.to_sql(
+             name=f"{strategy_name}_daily_stat"   # имя таблицы (будет создана автоматически)
+            ,schema='test'
+            ,con=engine       
+            ,if_exists='replace'
+            ,index=True
+        )
+        print(f"daily_stat сохранён в таблицу {strategy_name}_daily_stat")
+
+
         
         # берём последнюю строку
         # Текущее время в Московском часовом поясе
