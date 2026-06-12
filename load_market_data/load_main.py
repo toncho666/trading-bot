@@ -16,18 +16,30 @@ def main():
     print('_________________df.info()_________________')
     print('df.info()', df.info())
     
+    # Проверка на пустой DataFrame
+    if df.empty:
+        logging.error("DataFrame is empty. Exiting.")
+        return
     # 2. Подключение к БД
-    client = PostgresClient(
-        host = os.getenv("DB_HOST"),
-        port = os.getenv("DB_PORT"),
-        user = os.getenv("DB_USER"),
-        password = os.getenv("DB_PASS"),
-        database = os.getenv("DB_NAME")
-    )
+    try:
+        client = PostgresClient(
+            host=os.getenv("DB_HOST", "localhost"),
+            port=os.getenv("DB_PORT", "5432"),
+            user=os.getenv("DB_USER", "postgres"),
+            password=os.getenv("DB_PASS", ""),
+            database=os.getenv("DB_NAME", "postgres")
+        )
+    except Exception as e:
+        logging.error(f"Failed to connect to database: {e}")
+        return
 
     # 3. Запись
-    client.save_market_data(df, "btc_usd_t")
-
+    try:
+        client.save_market_data(df, "btc_usd_t")
+        logging.info("Data saved successfully")
+    except Exception as e:
+        logging.error(f"Failed to save data: {e}")
+        raise
 
 if __name__ == "__main__":
     main()
