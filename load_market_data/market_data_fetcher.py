@@ -10,7 +10,9 @@ class MarketDataFetcher:
     def fetch_ohlcv(self, symbol: str, timeframe: str = "1h", limit: int = 500) -> pd.DataFrame:
         """Запрос OHLCV данных."""
         raw = self.exchange.fetch_ohlcv(symbol, timeframe=timeframe, limit=limit)
-
+        
+        print('raw -> ', raw)
+        
         df = pd.DataFrame(
             raw,
             columns=["timestamp", "open", "high", "low", "close", "volume"]
