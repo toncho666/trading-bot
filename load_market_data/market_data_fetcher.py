@@ -22,5 +22,13 @@ class MarketDataFetcher:
         df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
         df["symbol"] = symbol
         df["timeframe"] = timeframe
-        df = df.iloc[:-1]  # используем iloc вместо df[:-1]
+        
+        
+        #df = df.iloc[:-1]  # используем iloc вместо df[:-1]
+        if len(df) > 1:
+            df = df.iloc[:-1]
+        else:
+            print(f"ВНИМАНИЕ: DataFrame содержит {len(df)} строк, удаление не выполнено")
+            return df
+            
         return df
