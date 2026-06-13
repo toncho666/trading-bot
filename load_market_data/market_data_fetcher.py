@@ -6,7 +6,7 @@ class MarketDataFetcher:
     def __init__(self, exchange_name="binance"):
         # self.exchange = getattr(ccxt, exchange_name)()
         # self.exchange = ccxt.okx()
-        self.exchange = ccxt.bybit()
+        self.exchange = ccxt.binance()
 
     
 
