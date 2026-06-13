@@ -9,6 +9,9 @@ def main():
 
     # 1. Получение данных
     fetcher = MarketDataFetcher("binance")
+
+    print(f'symbol is {symbol}, timeframe is {timeframe}')
+    
     df = fetcher.fetch_ohlcv(symbol, timeframe)
 
     print('_________________df_________________')
