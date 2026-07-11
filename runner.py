@@ -97,7 +97,7 @@ def run_strategy(file):
 
         
         strategies = {
-                "close_open_1pct": {"sl": 0.006,  "tp": 0.035},
+                "close_open_1pct": {"sl": 0.006,  "tp": 0.025},
                 "close_open_engulfing": {"sl": 0.011,  "tp": 0.035},
                 "macd_hist": {"sl": 0.008,  "tp": 0.035},
                 "candles": {"sl": 0.008,  "tp": 0.04},
